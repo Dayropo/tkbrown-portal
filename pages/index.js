@@ -1,8 +1,10 @@
 import Head from "next/head"
 import Image from "next/image"
-import { useState, useRef, useEffect } from "react"
+import { useState, useRef, useEffect, useContext } from "react"
 import { FaRegEye, FaRegEyeSlash } from "react-icons/fa"
 import { useRouter } from "next/router"
+import axios from "axios"
+import { AuthContext } from "../context/AuthContext"
 
 export default function Home() {
   const inputStyles =
@@ -24,9 +26,28 @@ export default function Home() {
     inputRef.current.focus()
   }, [])
 
-  const onSubmit = event => {
+  const { setAuth } = useContext(AuthContext)
+
+  const onSubmit = async event => {
     event.preventDefault()
-    router.push("/dashboard")
+    const res = await axios
+      .post("/api/login", {
+        email: user.email,
+        password: user.password,
+      })
+      .catch(err => console.error(err.response))
+    console.log(res)
+    if (res?.data) {
+      setAuth({
+        role: res?.data?.role,
+      })
+      if (res?.data?.role === "user") {
+        router.push(`/dashboard/${res?.data?.id}`)
+      }
+      if (res?.data?.role === "admin") {
+        router.push("/dashboard")
+      }
+    }
   }
 
   const handleChange = event => {
@@ -75,7 +96,6 @@ export default function Home() {
                 ref={inputRef}
                 type="text"
                 id="email"
-                autoComplete="off"
                 className={inputStyles}
                 onChange={e => handleChange(e)}
                 value={user.email}

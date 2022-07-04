@@ -6,6 +6,10 @@ import Image from "next/image"
 import payPal from "../../public/paypal.png"
 import { SidebarContext } from "../../context/SidebarContext"
 import { useRouter } from "next/router"
+import { AuthContext } from "../../context/AuthContext"
+import useSWR from "swr"
+import axios from "axios"
+import { timestampToDate } from "../../utils/helpers"
 
 const Menu = ({ setTab, setIsOpen }) => {
   const router = useRouter()
@@ -35,20 +39,21 @@ const Menu = ({ setTab, setIsOpen }) => {
   )
 }
 
-const ClientDashboard = () => {
+const ClientDashboard = ({ client }) => {
   const [isOpen, setIsOpen] = useState(false)
   const [tab, setTab] = useState("dashboard")
 
   const { showClientSidebar, setShowClientSidebar } = useContext(SidebarContext)
+  const { auth } = useContext(AuthContext)
 
   //form styles
   const inputStyles =
     "text-black font-normal bg-purple-50 px-4 pt-2 pb-1.5 border-b-2 border-gray-400 w-full placeholder:text-gray-400 hover:border-gray-400 focus:outline-none focus:ring-none focus:border-purple-600"
 
   // dashboard states
-  const [totalRevenue, setTotalRevenue] = useState(1030.55)
-  const [totalImpressions, setTotalImpressions] = useState(3120.61)
-  const eCPM = totalRevenue / totalImpressions
+  const [totalRevenue, setTotalRevenue] = useState("")
+  const [totalImpressions, setTotalImpressions] = useState("")
+  const eCPM = (totalRevenue / totalImpressions) * 1000
 
   // billings state
   const [paypal, setPaypal] = useState(false)
@@ -56,6 +61,24 @@ const ClientDashboard = () => {
   const toggleOptions = () => {
     setPaypal(prev => !prev)
   }
+
+  //get entries
+  const router = useRouter()
+  const { clientId } = router.query
+
+  const { data: entries } = useSWR("entries", async () => {
+    const res = await axios.get(`/api/entries/${clientId}`).catch(error => {
+      console.error(error?.response)
+    })
+    if (res?.data) {
+      console.log(res?.data[0])
+      setTotalRevenue(res?.data[0]?.revenue)
+      setTotalImpressions(res?.data[0]?.impressions)
+    }
+
+    return res?.data
+  })
+  console.log(entries)
 
   return (
     <div className="relative min-h-screen lg:w-4/5 ml-auto">
@@ -69,7 +92,7 @@ const ClientDashboard = () => {
           }}
         >
           <FaUserCircle size={16} className="sm:mr-2 mr-0" />
-          <p className="sm:block hidden">username@email.com</p>
+          <p className="sm:block hidden">{client?.email}</p>
         </span>
         <div className="lg:hidden flex ml-2.5">
           {showClientSidebar ? (
@@ -84,7 +107,7 @@ const ClientDashboard = () => {
       <main className="sm:px-16 sm:py-10 px-4 py-2.5">
         {tab === "dashboard" && (
           <div className="py-4">
-            <span className="font-semibold text-lg">Welcome, </span>
+            <span className="font-semibold text-lg">{`Welcome, ${client?.email}`}</span>
             {/**summary */}
             <div className="w-full mt-5 py-6 px-8 bg-purple-500 rounded-xl flex flex-wrap item-center justify-between text-white">
               <div>
@@ -93,7 +116,7 @@ const ClientDashboard = () => {
               </div>
               <div>
                 <p className="text-xs">Total Impressions</p>
-                <p className="sm:text-2xl text-xl">{`${totalImpressions}K`}</p>
+                <p className="sm:text-2xl text-xl">{`${totalImpressions}`}</p>
               </div>
               <div>
                 <p className="text-xs">eCPM</p>
@@ -114,13 +137,34 @@ const ClientDashboard = () => {
                   Revenue
                 </span>
                 <span className="w-1/4 text-center sm:text-base text-sm">
-                  Impressions (K)
+                  Impressions
                 </span>
                 <span className="w-1/4 text-center sm:text-base text-sm">
                   eCPM
                 </span>
               </div>
               {/**records mapping */}
+              {entries?.map((entry, index) => (
+                <div
+                  key={index}
+                  className={`${
+                    index === entries.length - 1 ? "rounded-b-md" : null
+                  } flex w-full py-3 bg-white text-black items-center`}
+                >
+                  <span className="w-1/4 text-center sm:text-base text-sm">
+                    {timestampToDate(entry?.created_at)}
+                  </span>
+                  <span className="w-1/4 text-center sm:text-base text-sm">
+                    {entry?.revenue}
+                  </span>
+                  <span className="w-1/4 text-center sm:text-base text-sm">
+                    {entry?.impressions}
+                  </span>
+                  <span className="w-1/4 text-center sm:text-base text-sm">
+                    {entry?.eCPM}
+                  </span>
+                </div>
+              ))}
             </div>
           </div>
         )}
@@ -134,7 +178,7 @@ const ClientDashboard = () => {
                 <FaUser size={24} />
               </div>
               <div className="mt-2.5">
-                <p>email@email.com</p>
+                <p>{}</p>
                 <p>Company Name</p>
               </div>
             </div>
