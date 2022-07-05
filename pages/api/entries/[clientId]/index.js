@@ -10,6 +10,9 @@ export default async function handler(req, res) {
       where: {
         client_id: clientId,
       },
+      orderBy: {
+        posted_at: "asc",
+      },
     })
 
     return res.status(200).send(entry)
