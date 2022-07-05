@@ -299,7 +299,7 @@ const MyAccount = () => {
               />
               {errors.confirmPassword ? (
                 <span className="text-sm text-red-500 pt-4">
-                  Password and Confirm Password don't match
+                  Password and Confirm Password don&apos;t match
                 </span>
               ) : null}
             </div>

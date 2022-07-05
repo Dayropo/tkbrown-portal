@@ -1,6 +1,7 @@
 import { useState } from "react"
 import useSWR from "swr"
 import axios from "axios"
+import { FiX } from "react-icons/fi"
 
 const Modal = ({ setShowModal, newClient }) => {
   return (
