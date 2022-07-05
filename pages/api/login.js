@@ -1,9 +1,11 @@
 import { PrismaClient } from "@prisma/client"
+import { withIronSessionApiRoute } from "iron-session/next"
 import bcrypt from "bcrypt"
+import { sessionOptions } from "../../lib/session"
 
 const prisma = new PrismaClient()
 
-export default async function login(req, res) {
+async function login(req, res) {
   const data = req.body
   if (req.method === "POST") {
     const admin = await prisma.admins.findUnique({
@@ -13,8 +15,15 @@ export default async function login(req, res) {
     })
     if (admin) {
       if (admin.password === data.password) {
-        return res.status(200).send({
+        req.session.user = {
+          email: admin.email,
           role: admin.role,
+          id: admin.id,
+        }
+        await req.session.save()
+        return res.status(200).send({
+          admin: true,
+          message: "Admin logged in successfully!",
         })
       }
       return res.status(400).send({
@@ -31,9 +40,16 @@ export default async function login(req, res) {
       if (client) {
         const match = await bcrypt.compare(data.password, client.password)
         if (match) {
-          return res.status(200).send({
+          req.session.user = {
+            email: client.email,
             role: client.role,
             id: client.id,
+          }
+          await req.session.save()
+          return res.status(200).send({
+            id: client.id,
+            user: true,
+            message: "Client logged in successfully!",
           })
         }
         return res.status(400).send({
@@ -43,3 +59,5 @@ export default async function login(req, res) {
     }
   }
 }
+
+export default withIronSessionApiRoute(login, sessionOptions)

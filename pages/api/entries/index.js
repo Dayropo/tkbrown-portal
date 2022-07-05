@@ -8,6 +8,7 @@ export default async function handler(req, res) {
     const revenue = data.revenue
     const impressions = data.impressions
     const eCPM = (revenue / impressions) * 1000
+    console.log(data.posted_at)
 
     const client = await prisma.clients.findUnique({
       where: {
@@ -18,6 +19,7 @@ export default async function handler(req, res) {
     if (client) {
       const entry = await prisma.entries.create({
         data: {
+          posted_at: data.posted_at,
           client_id: client.id,
           client_email: client.email,
           revenue,
