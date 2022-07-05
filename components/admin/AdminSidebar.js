@@ -2,6 +2,8 @@ import { useContext } from "react"
 import { SidebarContext } from "../../context/SidebarContext"
 import { FiUsers } from "react-icons/fi"
 import { BsJournals } from "react-icons/bs"
+import Logo from "../../public/white_logo_transparent_background.png"
+import Image from "next/image"
 
 const AdminSidebar = ({ tab, setTab }) => {
   const { showAdminSidebar, setShowAdminSidebar } = useContext(SidebarContext)
@@ -18,10 +20,13 @@ const AdminSidebar = ({ tab, setTab }) => {
           : "-translate-x-full shadow-none"
       }`}
     >
-      <div className="relative cursor-pointer">
-        <p className="font-parisienne text-base -mb-2.5">The</p>
-        <p className="font-oswald text-semibold text-4xl">TKBrown</p>
-        <p className="font-parisienne text-base ml-14 -mt-1.5">Company</p>
+      <div className="relative flex w-52 h-28 ">
+        <Image
+          src={Logo}
+          layout="fill"
+          objectFit="contain"
+          alt="the tkbrown.co"
+        />
       </div>
 
       <div className="mt-6 space-y-4">
