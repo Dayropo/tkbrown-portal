@@ -267,7 +267,7 @@ const Entries = () => {
       <div className="py-4 mt-8">
         <span className="font-semibold text-lg">Entries</span>
         <div className="mt-8 flex flex-col">
-          <div className="flex w-full py-3 bg-purple-300 rounded-t-md text-white items-end">
+          <div className="flex w-full py-3 bg-purple-400 rounded-t-md text-white items-end">
             <span className="w-1/5 text-center sm:text-base text-sm">Date</span>
             <span className="w-1/5 text-center sm:text-base text-sm">
               Client
