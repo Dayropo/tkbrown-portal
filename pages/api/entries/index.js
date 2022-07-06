@@ -27,9 +27,11 @@ export default async function handler(req, res) {
         },
       })
 
-      return res.status(201).send({
-        message: "Entry created successfully!",
-      })
+      if (entry) {
+        return res.status(201).send({
+          message: "Entry created successfully!",
+        })
+      }
     }
   }
 
@@ -39,6 +41,13 @@ export default async function handler(req, res) {
         posted_at: "asc",
       },
     })
-    return res.status(200).send(entries)
+
+    if (entries) {
+      return res.status(200).send(entries)
+    }
+
+    return res.status(404).send({
+      message: "No entries found!",
+    })
   }
 }

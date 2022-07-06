@@ -43,6 +43,13 @@ export default async function clientHandler(req, res) {
 
   if (req.method === "GET") {
     const clients = await prisma.clients.findMany()
-    return res.status(200).send(clients)
+
+    if (clients) {
+      return res.status(200).send(clients)
+    }
+
+    return res.status(404).send({
+      message: "No clients found!",
+    })
   }
 }

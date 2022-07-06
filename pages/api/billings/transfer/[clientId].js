@@ -30,6 +30,10 @@ export default async function handler(req, res) {
             message: "Billing details added successfully!",
           })
         }
+
+        return res.status(400).send({
+          message: "Bad request!",
+        })
       }
 
       const billing = await prisma.billings.update({
@@ -44,10 +48,14 @@ export default async function handler(req, res) {
           message: "Billing details updated successfully!",
         })
       }
+
+      return res.status(400).send({
+        message: "Bad request!",
+      })
     }
 
-    return res.status(400).send({
-      message: "Bad request!",
+    return res.status(404).send({
+      message: "This client does not exist!",
     })
   }
 }

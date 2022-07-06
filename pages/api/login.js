@@ -26,6 +26,7 @@ async function login(req, res) {
           message: "Admin logged in successfully!",
         })
       }
+
       return res.status(400).send({
         message: "Invalid Email or Password",
       })
@@ -52,6 +53,7 @@ async function login(req, res) {
             message: "Client logged in successfully!",
           })
         }
+
         return res.status(400).send({
           message: "Invalid Email or Password",
         })

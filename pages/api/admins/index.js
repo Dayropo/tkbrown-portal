@@ -28,9 +28,16 @@ export default async function createAdmin(req, res) {
       email: data.email,
       password: hashPassword,
     })
-    return res.status(201).send({
-      email: admin.email,
-      password: password,
+
+    if (admin) {
+      return res.status(201).send({
+        email: admin.email,
+        password: password,
+      })
+    }
+
+    return res.status(400).send({
+      message: "Bad request!",
     })
   }
 }

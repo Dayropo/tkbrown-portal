@@ -1,22 +1,20 @@
-import { FaUserCircle, FaUser } from "react-icons/fa"
+import { FaRegEye, FaRegEyeSlash } from "react-icons/fa"
 import useSWR from "swr"
 import axios from "axios"
 import { useRouter } from "next/router"
 import Image from "next/image"
 import payPal from "../../public/paypal.png"
 import { useState } from "react"
+import Swal from "sweetalert2"
 
 const MyAccount = () => {
   //form styles
   const inputStyles =
     "text-black font-normal bg-purple-50 px-4 pt-2 pb-1.5 border-b-2 border-gray-400 w-full placeholder:text-gray-400 hover:border-gray-400 focus:outline-none focus:ring-none focus:border-purple-600"
-
-  const [errors, setErrors] = useState({
-    password: false,
-    confirmPassword: false,
-  })
+  const [inputType, setInputType] = useState("password")
 
   // billings state
+  const [billingEmail, setBillingEmail] = useState("")
   const [paypal, setPaypal] = useState(false)
   const [paypalEmail, setPaypalEmail] = useState("")
 
@@ -33,9 +31,30 @@ const MyAccount = () => {
     confirm: "",
   })
 
+  //error states
+  const [transferErrors, setTransferErrors] = useState({
+    billingEmail: "",
+    accountNumber: "",
+    bankName: "",
+    bankSwift: "",
+    bankAddress: "",
+  })
+
+  const [paypalErrors, setPaypalErrors] = useState({
+    billingEmail: "",
+    paypalEmail: "",
+  })
+
+  const [passwordErrors, setPasswordErrors] = useState({
+    password: "",
+    confirmPassword: "",
+  })
+
+  //toggle transfer or paypal
   const toggleOptions = () => {
     setPaypal(prev => !prev)
   }
+
   const router = useRouter()
   const { clientId } = router.query
 
@@ -46,86 +65,343 @@ const MyAccount = () => {
     return res?.data
   })
 
+  //validation handlers
+  const validateBillingTransfer = () => {
+    let isValid = true
+
+    if (billingEmail) {
+      const pattern = new RegExp(
+        /^(("[\w-\s]+")|([\w-]+(?:\.[\w-]+)*)|("[\w-\s]+")([\w-]+(?:\.[\w-]+)*))(@((?:[\w-]+\.)*\w[\w-]{0,66})\.([a-z]{2,6}(?:\.[a-z]{2})?)$)|(@\[?((25[0-5]\.|2[0-4][0-9]\.|1[0-9]{2}\.|[0-9]{1,2}\.))((25[0-5]|2[0-4][0-9]|1[0-9]{2}|[0-9]{1,2})\.){2}(25[0-5]|2[0-4][0-9]|1[0-9]{2}|[0-9]{1,2})\]?$)/i
+      )
+      if (pattern.test(billingEmail)) {
+        setTransferErrors(prevState => ({
+          ...prevState,
+          billingEmail: "",
+        }))
+      } else {
+        isValid = false
+        setTransferErrors(prevState => ({
+          ...prevState,
+          billingEmail: "Provide a valid email",
+        }))
+      }
+    } else {
+      isValid = false
+      setTransferErrors(prevState => ({
+        ...prevState,
+        billingEmail: "This field is required",
+      }))
+    }
+
+    if (bankDetails.account_number) {
+      if (
+        bankDetails?.account_number.length >= 5 &&
+        bankDetails?.account_number.length <= 17
+      ) {
+        setTransferErrors(prevState => ({
+          ...prevState,
+          accountNumber: "",
+        }))
+      } else {
+        isValid = false
+        setTransferErrors(prevState => ({
+          ...prevState,
+          accountNumber: "Provide a valid account number",
+        }))
+      }
+    } else {
+      isValid = false
+      setTransferErrors(prevState => ({
+        ...prevState,
+        accountNumber: "This field is required",
+      }))
+    }
+
+    if (!bankDetails?.bank_address) {
+      isValid = false
+      setTransferErrors(prevState => ({
+        ...prevState,
+        bankAddress: "This field is required",
+      }))
+    }
+
+    if (!bankDetails?.bank_name) {
+      isValid = false
+      setTransferErrors(prevState => ({
+        ...prevState,
+        bankName: "This field is required",
+      }))
+    }
+
+    if (bankDetails.bank_swift) {
+      if (
+        bankDetails?.bank_swift.length >= 8 &&
+        bankDetails.bank_swift.length <= 11
+      ) {
+        setTransferErrors(prevState => ({
+          ...prevState,
+          bankSwift: "",
+        }))
+      } else {
+        isValid = false
+        setTransferErrors(prevState => ({
+          ...prevState,
+          bankSwift: "Provide a valid bank swift or bic code",
+        }))
+      }
+    } else {
+      isValid = false
+      setTransferErrors(prevState => ({
+        ...prevState,
+        bankSwift: "This field is required",
+      }))
+    }
+
+    return isValid
+  }
+
+  const validateBillingPaypal = () => {
+    let isValid = true
+
+    if (billingEmail) {
+      const pattern = new RegExp(
+        /^(("[\w-\s]+")|([\w-]+(?:\.[\w-]+)*)|("[\w-\s]+")([\w-]+(?:\.[\w-]+)*))(@((?:[\w-]+\.)*\w[\w-]{0,66})\.([a-z]{2,6}(?:\.[a-z]{2})?)$)|(@\[?((25[0-5]\.|2[0-4][0-9]\.|1[0-9]{2}\.|[0-9]{1,2}\.))((25[0-5]|2[0-4][0-9]|1[0-9]{2}|[0-9]{1,2})\.){2}(25[0-5]|2[0-4][0-9]|1[0-9]{2}|[0-9]{1,2})\]?$)/i
+      )
+      if (pattern.test(billingEmail)) {
+        setPaypalErrors(prevState => ({
+          ...prevState,
+          billingEmail: "",
+        }))
+      } else {
+        isValid = false
+        setPaypalErrors(prevState => ({
+          ...prevState,
+          billingEmail: "Provide a valid email",
+        }))
+      }
+    } else {
+      isValid = false
+      setPaypalErrors(prevState => ({
+        ...prevState,
+        billingEmail: "This field is required",
+      }))
+    }
+
+    if (paypalEmail) {
+      const pattern = new RegExp(
+        /^(("[\w-\s]+")|([\w-]+(?:\.[\w-]+)*)|("[\w-\s]+")([\w-]+(?:\.[\w-]+)*))(@((?:[\w-]+\.)*\w[\w-]{0,66})\.([a-z]{2,6}(?:\.[a-z]{2})?)$)|(@\[?((25[0-5]\.|2[0-4][0-9]\.|1[0-9]{2}\.|[0-9]{1,2}\.))((25[0-5]|2[0-4][0-9]|1[0-9]{2}|[0-9]{1,2})\.){2}(25[0-5]|2[0-4][0-9]|1[0-9]{2}|[0-9]{1,2})\]?$)/i
+      )
+      if (pattern.test(paypalEmail)) {
+        setPaypalErrors(prevState => ({
+          ...prevState,
+          paypalEmail: "",
+        }))
+      } else {
+        isValid = false
+        setPaypalErrors(prevState => ({
+          ...prevState,
+          paypalEmail: "Provide a valid email",
+        }))
+      }
+    } else {
+      isValid = false
+      setPaypalErrors(prevState => ({
+        ...prevState,
+        paypalEmail: "This field is required",
+      }))
+    }
+
+    return isValid
+  }
+
+  const validateUpdatePassword = () => {
+    let isValid = true
+
+    if (password?.new) {
+      const pattern = new RegExp(
+        /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/
+      )
+      if (pattern.test(password?.new)) {
+        setPasswordErrors(prevState => ({
+          ...prevState,
+          password: "",
+        }))
+      } else {
+        isValid = false
+        setPasswordErrors(prevState => ({
+          ...prevState,
+          password:
+            "Password must contain a minimun of eight characters, at least one uppercase letter, one lowercase letter, one number and one special character",
+        }))
+      }
+    } else {
+      isValid = false
+      setPasswordErrors(prevState => ({
+        ...prevState,
+        password: "This field is required",
+      }))
+    }
+
+    if (password.confirm) {
+      if (password?.confirm === password?.new) {
+        setPasswordErrors(prevState => ({
+          ...prevState,
+          confirmPassword: "",
+        }))
+      } else {
+        isValid = false
+        setPasswordErrors(prevState => ({
+          ...prevState,
+          confirmPassword: "Password and confirm password mismatch",
+        }))
+      }
+    } else {
+      isValid = false
+      setPasswordErrors(prevState => ({
+        ...prevState,
+        confirmPassword: "This field is required",
+      }))
+    }
+
+    return isValid
+  }
+
+  // submit handlers
   const addBillingTransfer = async e => {
     e.preventDefault()
-
-    const res = await axios
-      .put(`/api/billings/transfer/${clientId}`, {
-        client_id: clientId,
-        client_email: client?.email,
-        bank_name: bankDetails.bank_name,
-        account_number: bankDetails.account_number,
-        bank_swift: bankDetails.bank_swift,
-        bank_address: bankDetails.bank_address,
-      })
-      .catch(error => console.error(error?.response))
-    if (res?.status === 201 || 204) {
-      setBankDetails({
-        account_number: "",
-        bank_name: "",
-        bank_swift: "",
-        bank_address: "",
-      })
+    const validation = validateBillingTransfer()
+    if (validation) {
+      const res = await axios
+        .put(`/api/billings/transfer/${clientId}`, {
+          client_id: clientId,
+          billing_email: billingEmail,
+          bank_name: bankDetails.bank_name,
+          account_number: bankDetails.account_number,
+          bank_swift: bankDetails.bank_swift,
+          bank_address: bankDetails.bank_address,
+        })
+        .catch(error => console.error(error?.response))
+      if (res?.status === 201 || 204) {
+        Swal.fire({
+          toast: true,
+          icon: "success",
+          title: res?.data?.message,
+          position: "top",
+          timer: 5000,
+          showConfirmButton: false,
+        })
+        setBankDetails({
+          account_number: "",
+          bank_name: "",
+          bank_swift: "",
+          bank_address: "",
+        })
+        setBillingEmail("")
+      }
     }
   }
 
   const addBillingPaypal = async e => {
     e.preventDefault()
 
-    const res = await axios
-      .put(`/api/billings/paypal/${clientId}`, {
-        client_id: clientId,
-        client_email: client?.email,
-        paypal_email: paypalEmail,
-      })
-      .catch(error => console.error(error?.response))
-    if (res?.status === 201 || 204) {
-      setPaypalEmail("")
+    const validation = validateBillingPaypal()
+    if (validation) {
+      const res = await axios
+        .put(`/api/billings/paypal/${clientId}`, {
+          client_id: clientId,
+          billing_email: billingEmail,
+          paypal_email: paypalEmail,
+        })
+        .catch(error => console.error(error?.response))
+      if (res?.status === 201 || 204) {
+        Swal.fire({
+          toast: true,
+          icon: "success",
+          title: res?.data?.message,
+          position: "top",
+          timer: 5000,
+          showConfirmButton: false,
+        })
+        setPaypalEmail("")
+        setBillingEmail("")
+      }
     }
   }
 
   const updatePassword = async e => {
     e.preventDefault()
 
-    if (password.new === password.confirm) {
+    const validation = validateUpdatePassword()
+    if (validation) {
       const res = await axios
         .put(`/api/clients/${clientId}`, {
           password: password.new,
         })
         .catch(error => console.error(error?.response))
       if (res?.status === 201) {
+        Swal.fire({
+          toast: true,
+          icon: "success",
+          title: res?.data?.message,
+          position: "top",
+          timer: 5000,
+          showConfirmButton: false,
+        })
         setPassword({
           new: "",
           confirm: "",
         })
-        setErrors({
-          password: false,
+        setPasswordErrors({
+          password: "",
+          confirmPassword: "",
         })
       }
     }
-
-    setErrors({
-      ...errors,
-      confirmPassword: true,
-    })
   }
 
   return (
     <div className="py-4">
       <span className="font-semibold text-lg">My Account</span>
-      {/**personal details */}
-      <div className="xl:w-2/5 md:w-1/2 mt-5 bg-purple-500 py-6 px-8 rounded-xl text-white flex">
-        <div className="rounded-full bg-gray-200 w-16 h-16 flex items-center justify-center mr-2.5">
-          <FaUser size={24} />
+      {/**billing address */}
+      <form className="w-full mt-8">
+        <div className="w-full">
+          <input
+            type="text"
+            id="billingEmail"
+            placeholder="Email address to receive bills *"
+            required
+            autoComplete="off"
+            className={inputStyles}
+            value={billingEmail}
+            onChange={e => {
+              setPaypalErrors({
+                billingEmail: "",
+                paypalEmail: "",
+              })
+              setTransferErrors({
+                accountNumber: "",
+                bankAddress: "",
+                bankName: "",
+                bankSwift: "",
+                billingEmail: "",
+              })
+              setBillingEmail(e.target.value)
+            }}
+          />
+          {paypal ? (
+            <p className="sm:text-sm text-xs text-red-500 mt-2.5">
+              {paypalErrors?.billingEmail}
+            </p>
+          ) : (
+            <p className="sm:text-sm text-xs text-red-500 mt-2.5">
+              {transferErrors?.billingEmail}
+            </p>
+          )}
         </div>
-        <div className="mt-2.5">
-          <p>{client?.email}</p>
-          <p>{client?.company}</p>
-        </div>
-      </div>
+      </form>
 
       {/** billing details */}
-      <div className="py-4">
+      <div className="py-4 mt-4">
         <span className="font-semibold text-lg">Payment Details</span>
         {/**options */}
         <div className="flex w-full mt-6">
@@ -164,13 +440,22 @@ const MyAccount = () => {
               <input
                 type="text"
                 id="paypalEmail"
-                placeholder="PayPal Email Address *"
+                placeholder="PayPal email address *"
                 required
                 autoComplete="off"
                 className={inputStyles}
                 value={paypalEmail}
-                onChange={e => setPaypalEmail(e.target.value)}
+                onChange={e => {
+                  setPaypalErrors({
+                    billingEmail: "",
+                    paypalEmail: "",
+                  })
+                  setPaypalEmail(e.target.value)
+                }}
               />
+              <p className="sm:text-sm text-xs text-red-500 mt-2.5">
+                {paypalErrors?.paypalEmail}
+              </p>
             </div>
             <button
               className="mt-8 bg-purple-500 text-white py-2 px-6 rounded text-sm"
@@ -186,36 +471,56 @@ const MyAccount = () => {
                 <input
                   type="text"
                   id="bank"
-                  placeholder="Bank Name *"
+                  placeholder="Bank name *"
                   required
                   autoComplete="off"
                   className={inputStyles}
                   value={bankDetails.bank_name}
-                  onChange={e =>
+                  onChange={e => {
+                    setTransferErrors({
+                      accountNumber: "",
+                      bankAddress: "",
+                      bankName: "",
+                      bankSwift: "",
+                      billingEmail: "",
+                    })
                     setBankDetails({
                       ...bankDetails,
                       bank_name: e.target.value,
                     })
-                  }
+                  }}
                 />
+                <p className="sm:text-sm text-xs text-red-500 mt-2.5">
+                  {transferErrors?.bankName}
+                </p>
               </div>
               <div className="w-1/2 pl-4">
                 <input
                   type="number"
                   id="account"
-                  placeholder="Bank Account Number *"
+                  placeholder="Bank account number *"
                   pattern="[0-9]*"
                   required
                   autoComplete="off"
                   className={inputStyles}
                   value={bankDetails.account_number}
-                  onChange={e =>
+                  onChange={e => {
+                    setTransferErrors({
+                      accountNumber: "",
+                      bankAddress: "",
+                      bankName: "",
+                      bankSwift: "",
+                      billingEmail: "",
+                    })
                     setBankDetails({
                       ...bankDetails,
                       account_number: e.target.value,
                     })
-                  }
+                  }}
                 />
+                <p className="sm:text-sm text-xs text-red-500 mt-2.5">
+                  {transferErrors?.accountNumber}
+                </p>
               </div>
             </div>
             <div className="flex w-full mt-8">
@@ -228,30 +533,50 @@ const MyAccount = () => {
                   autoComplete="off"
                   className={inputStyles}
                   value={bankDetails.bank_swift}
-                  onChange={e =>
+                  onChange={e => {
+                    setTransferErrors({
+                      accountNumber: "",
+                      bankAddress: "",
+                      bankName: "",
+                      bankSwift: "",
+                      billingEmail: "",
+                    })
                     setBankDetails({
                       ...bankDetails,
                       bank_swift: e.target.value,
                     })
-                  }
+                  }}
                 />
+                <p className="sm:text-sm text-xs text-red-500 mt-2.5">
+                  {transferErrors?.bankSwift}
+                </p>
               </div>
               <div className="w-1/2 pl-4">
                 <input
                   type="text"
                   id="bank-address"
-                  placeholder="Bank Address *"
+                  placeholder="Bank address *"
                   required
                   autoComplete="off"
                   className={inputStyles}
                   value={bankDetails.bank_address}
-                  onChange={e =>
+                  onChange={e => {
+                    setTransferErrors({
+                      accountNumber: "",
+                      bankAddress: "",
+                      bankName: "",
+                      bankSwift: "",
+                      billingEmail: "",
+                    })
                     setBankDetails({
                       ...bankDetails,
                       bank_address: e.target.value,
                     })
-                  }
+                  }}
                 />
+                <p className="sm:text-sm text-xs text-red-500 mt-2.5">
+                  {transferErrors?.bankAddress}
+                </p>
               </div>
             </div>
             <button
@@ -269,23 +594,40 @@ const MyAccount = () => {
         <span className="text-lg font-semibold">Change Password</span>
         <form className="w-full mt-8">
           <div className="flex w-full">
-            <div className="w-1/2 pr-4">
+            <div className="w-1/2 pr-4 relative">
               <input
-                type="password"
+                type={inputStyles}
                 id="password"
                 placeholder="Password *"
                 required
                 autoComplete="off"
                 className={inputStyles}
                 value={password.new}
-                onChange={e =>
+                onChange={e => {
+                  setPasswordErrors({
+                    password: "",
+                    confirmPassword: "",
+                  })
                   setPassword({ ...password, new: e.target.value })
-                }
+                }}
               />
+              <p className="sm:text-sm text-xs text-red-500 mt-2.5">
+                {passwordErrors?.password}
+              </p>
+              <span className="absolute text-gray-600 top-2.5 right-8 z-10">
+                {inputType === "password" ? (
+                  <FaRegEye size={16} onClick={() => setInputType("text")} />
+                ) : (
+                  <FaRegEyeSlash
+                    size={16}
+                    onClick={() => setInputType("password")}
+                  />
+                )}
+              </span>
             </div>
-            <div className="w-1/2 pl-4">
+            <div className="w-1/2 pl-4 relative">
               <input
-                type="password"
+                type={inputStyles}
                 id="confirm"
                 placeholder="Confirm Password *"
                 required
@@ -293,15 +635,26 @@ const MyAccount = () => {
                 className={inputStyles}
                 value={password.confirm}
                 onChange={e => {
+                  setPasswordErrors({
+                    password: "",
+                    confirmPassword: "",
+                  })
                   setPassword({ ...password, confirm: e.target.value })
-                  setErrors({})
                 }}
               />
-              {errors.confirmPassword ? (
-                <span className="text-sm text-red-500 pt-4">
-                  Password and Confirm Password don&apos;t match
-                </span>
-              ) : null}
+              <p className="sm:text-sm text-xs text-red-500 mt-2.5">
+                {passwordErrors?.confirmPassword}
+              </p>
+              <span className="absolute text-gray-600 top-2.5 right-4 z-10">
+                {inputType === "password" ? (
+                  <FaRegEye size={16} onClick={() => setInputType("text")} />
+                ) : (
+                  <FaRegEyeSlash
+                    size={16}
+                    onClick={() => setInputType("password")}
+                  />
+                )}
+              </span>
             </div>
           </div>
           <button

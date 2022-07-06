@@ -2,29 +2,7 @@ import { useState } from "react"
 import useSWR from "swr"
 import axios from "axios"
 import { FiX } from "react-icons/fi"
-
-const Modal = ({ setShowModal, newClient }) => {
-  return (
-    <div className="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
-      {/**modal content */}
-      <div className="relative top-20 mx-auto p-5 border lg:w-1/2 sm:w-3/5 w-full shadow-xl rounded-md bg-white text-black">
-        <button
-          className="absolute -top-3 -right-3 bg-white rounded-full shadow-lg p-2.5 text-sm text-center text-black"
-          onClick={() => setShowModal(false)}
-        >
-          <FiX size={16} />
-        </button>
-
-        <span className="text-lg font-semibold">Client Details</span>
-        <div className="mt-8">
-          <p>{`email: ${newClient?.email}`}</p>
-          <p>{`company: ${newClient?.company}`}</p>
-          <p>{`password: ${newClient?.password}`}</p>
-        </div>
-      </div>
-    </div>
-  )
-}
+import Swal from "sweetalert2"
 
 const Clients = () => {
   const inputStyles =
@@ -38,10 +16,6 @@ const Clients = () => {
     return res?.data
   })
 
-  //new client state
-  const [showModal, setShowModal] = useState(false)
-  const [newClient, setNewClient] = useState({})
-
   // client input state
   const [client, setClient] = useState({
     email: "",
@@ -51,30 +25,36 @@ const Clients = () => {
   const addClient = async e => {
     e.preventDefault()
     const res = await axios
-      .post(
-        "/api/clients/",
-        {
-          email: client.email,
-          company: client.company,
-        },
-        {
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
-      )
-      .catch(err => console.error(err?.response))
-    if (res) {
-      setNewClient(res?.data)
-      setShowModal(true)
+      .post("/api/clients/", {
+        email: client.email,
+        company: client.company,
+      })
+      .catch(err => {
+        Swal.fire({
+          toast: true,
+          icon: "error",
+          title: err?.response?.data?.message,
+          position: "top",
+          showConfirmButton: false,
+          timer: 5000,
+        })
+        console.error(err?.response)
+      })
+    if (res?.data) {
+      Swal.fire({
+        title: "New client added successfully",
+        html: `<b>Client Details</b> <br />
+        Email: ${res?.data?.email} <br />
+        Company: ${res?.data?.company} <br/>
+        Password: ${res?.data?.password}
+        `,
+        allowOutsideClick: false,
+      })
     }
   }
 
   return (
     <div className="py-4 relative">
-      {/**new client modal */}
-      {showModal && <Modal setShowModal={setShowModal} newClient={newClient} />}
-
       <span className="font-semibold text-lg">Add a new Client</span>
       {/**add client form */}
       <form className="w-full mt-8">
