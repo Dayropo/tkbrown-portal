@@ -37,7 +37,6 @@ export default function Home() {
         console.error(err.response)
         setLoginError(err?.response?.data?.message)
       })
-    console.log(res?.data)
 
     if (res?.data?.user) {
       router.push(`/dashboard/${res?.data?.id}`)

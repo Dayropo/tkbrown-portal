@@ -2,8 +2,8 @@ import { useContext } from "react"
 import { SidebarContext } from "../../context/SidebarContext"
 import { FiUsers } from "react-icons/fi"
 import { BsJournals } from "react-icons/bs"
-import Logo from "../../public/white_logo_transparent_background.png"
 import Image from "next/image"
+import Logo from "../../public/white_logo_transparent_background.png"
 
 const AdminSidebar = ({ tab, setTab }) => {
   const { showAdminSidebar, setShowAdminSidebar } = useContext(SidebarContext)
@@ -26,6 +26,7 @@ const AdminSidebar = ({ tab, setTab }) => {
           layout="fill"
           objectFit="contain"
           alt="the tkbrown.co"
+          priority
         />
       </div>
 

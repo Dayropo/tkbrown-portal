@@ -8,7 +8,6 @@ export default async function handler(req, res) {
     const revenue = data.revenue
     const impressions = data.impressions
     const eCPM = (revenue / impressions) * 1000
-    console.log(data.posted_at)
 
     const client = await prisma.clients.findUnique({
       where: {
@@ -27,7 +26,7 @@ export default async function handler(req, res) {
           eCPM,
         },
       })
-      console.log(entry)
+
       return res.status(201).send({
         message: "Entry created successfully!",
       })

@@ -1,8 +1,8 @@
 import { useContext } from "react"
 import { SidebarContext } from "../../context/SidebarContext"
 import { FaHome, FaUserCircle } from "react-icons/fa"
-import Logo from "../../public/white_logo_transparent_background.png"
 import Image from "next/image"
+import Logo from "../../public/white_logo_transparent_background.png"
 
 const ClientSidebar = ({ tab, setTab }) => {
   const { showClientSidebar, setShowClientSidebar } = useContext(SidebarContext)
@@ -25,6 +25,7 @@ const ClientSidebar = ({ tab, setTab }) => {
           layout="fill"
           objectFit="contain"
           alt="the tkbrown.co"
+          priority
         />
       </div>
 
