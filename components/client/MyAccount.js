@@ -596,7 +596,7 @@ const MyAccount = () => {
           <div className="flex w-full">
             <div className="w-1/2 pr-4 relative">
               <input
-                type={inputStyles}
+                type={inputType}
                 id="password"
                 placeholder="Password *"
                 required
@@ -627,7 +627,7 @@ const MyAccount = () => {
             </div>
             <div className="w-1/2 pl-4 relative">
               <input
-                type={inputStyles}
+                type={inputType}
                 id="confirm"
                 placeholder="Confirm Password *"
                 required
