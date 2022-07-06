@@ -2,6 +2,7 @@ import { useState } from "react"
 import useSWR from "swr"
 import axios from "axios"
 import { timestampToDate } from "../../utils/helpers"
+import Swal from "sweetalert2"
 
 const Entries = () => {
   const inputStyles =
@@ -14,24 +15,132 @@ const Entries = () => {
     revenue: "",
     impressions: "",
   })
+  const [errors, setErrors] = useState({
+    date: "",
+    email: "",
+    revenue: "",
+    impressions: "",
+  })
+
+  const validate = () => {
+    let isValid = true
+    setErrors({
+      date: "",
+      email: "",
+      revenue: "",
+      impressions: "",
+    })
+
+    if (entry?.date) {
+      const regEx = /^\d{4}-\d{2}-\d{2}$/
+
+      if (!entry?.date.match(regEx)) {
+        isValid = false
+        setErrors(prevState => ({
+          ...prevState,
+          date: "Provide a valid date",
+        }))
+      }
+
+      const d = new Date(entry?.date)
+      const dNum = d.getTime()
+      if (!dNum && dNum !== 0) {
+        isValid = false
+        setErrors(prevState => ({
+          ...prevState,
+          date: "Provide a valid date",
+        }))
+      }
+
+      const date = d.toISOString().slice(0, 10)
+      if (date) {
+        isValid = true
+        setErrors(prevState => ({
+          ...prevState,
+          date: "",
+        }))
+      }
+    } else {
+      isValid = false
+      setErrors(prevState => ({
+        ...prevState,
+        date: "This field is required",
+      }))
+    }
+
+    if (entry?.client_email) {
+      const pattern = new RegExp(
+        /^(("[\w-\s]+")|([\w-]+(?:\.[\w-]+)*)|("[\w-\s]+")([\w-]+(?:\.[\w-]+)*))(@((?:[\w-]+\.)*\w[\w-]{0,66})\.([a-z]{2,6}(?:\.[a-z]{2})?)$)|(@\[?((25[0-5]\.|2[0-4][0-9]\.|1[0-9]{2}\.|[0-9]{1,2}\.))((25[0-5]|2[0-4][0-9]|1[0-9]{2}|[0-9]{1,2})\.){2}(25[0-5]|2[0-4][0-9]|1[0-9]{2}|[0-9]{1,2})\]?$)/i
+      )
+      if (pattern.test(entry?.client_email)) {
+        setErrors(prevState => ({
+          ...prevState,
+          email: "",
+        }))
+      } else {
+        isValid = false
+        setErrors(prevState => ({
+          ...prevState,
+          email: "Provide a valid email",
+        }))
+      }
+    } else {
+      isValid = false
+      setErrors(prevState => ({
+        ...prevState,
+        email: "This field is required",
+      }))
+    }
+
+    if (!entry?.revenue) {
+      isValid = false
+      setErrors(prevState => ({
+        ...prevState,
+        revenue: "This field is required",
+      }))
+    }
+
+    if (!entry?.impressions) {
+      isValid = false
+      setErrors(prevState => ({
+        ...prevState,
+        impressions: "This field is required",
+      }))
+    }
+
+    return isValid
+  }
 
   const addEntry = async e => {
     e.preventDefault()
-    const res = await axios
-      .post("/api/entries/", {
-        posted_at: entry.date,
-        client_email: entry.client_email,
-        revenue: Number.parseFloat(entry.revenue),
-        impressions: Number.parseInt(entry.impressions, 10),
-      })
-      .catch(err => console.error(err?.response))
-    if (res?.status === 201) {
-      setEntry({
-        date: "",
-        client_email: "",
-        revenue: "",
-        impressions: "",
-      })
+
+    let validation = await validate()
+
+    if (validation) {
+      const res = await axios
+        .post("/api/entries/", {
+          posted_at: entry.date,
+          client_email: entry.client_email,
+          revenue: Number.parseFloat(entry.revenue),
+          impressions: Number.parseInt(entry.impressions, 10),
+        })
+        .catch(err => console.error(err?.response))
+      if (res?.status === 201) {
+        Swal.fire({
+          toast: true,
+          icon: "success",
+          title: res?.data?.message,
+          position: "top",
+          timer: 5000,
+          showConfirmButton: false,
+        })
+        setEntry({
+          date: "",
+          client_email: "",
+          revenue: "",
+          impressions: "",
+        })
+      }
     }
   }
 
@@ -59,8 +168,19 @@ const Entries = () => {
                 required
                 className={inputStyles}
                 value={entry.date}
-                onChange={e => setEntry({ ...entry, date: e.target.value })}
+                onChange={e => {
+                  setErrors({
+                    date: "",
+                    email: "",
+                    revenue: "",
+                    impressions: "",
+                  })
+                  setEntry({ ...entry, date: e.target.value })
+                }}
               />
+              <p className="sm:text-sm text-xs text-red-500 mt-2.5">
+                {errors?.date}
+              </p>
             </div>
             <div className="w-1/2 pl-4 sm:pr-4 pr-0">
               <input
@@ -70,10 +190,19 @@ const Entries = () => {
                 required
                 className={inputStyles}
                 value={entry.client_email}
-                onChange={e =>
+                onChange={e => {
+                  setErrors({
+                    date: "",
+                    email: "",
+                    revenue: "",
+                    impressions: "",
+                  })
                   setEntry({ ...entry, client_email: e.target.value })
-                }
+                }}
               />
+              <p className="sm:text-sm text-xs text-red-500 mt-2.5">
+                {errors?.email}
+              </p>
             </div>
           </div>
 
@@ -87,8 +216,19 @@ const Entries = () => {
                 autoComplete="off"
                 className={inputStyles}
                 value={entry.revenue}
-                onChange={e => setEntry({ ...entry, revenue: e.target.value })}
+                onChange={e => {
+                  setErrors({
+                    date: "",
+                    email: "",
+                    revenue: "",
+                    impressions: "",
+                  })
+                  setEntry({ ...entry, revenue: e.target.value })
+                }}
               />
+              <p className="sm:text-sm text-xs text-red-500 mt-2.5">
+                {errors?.revenue}
+              </p>
             </div>
             <div className="w-1/2 pl-4">
               <input
@@ -99,10 +239,19 @@ const Entries = () => {
                 autoComplete="off"
                 className={inputStyles}
                 value={entry.impressions}
-                onChange={e =>
+                onChange={e => {
+                  setErrors({
+                    date: "",
+                    email: "",
+                    revenue: "",
+                    impressions: "",
+                  })
                   setEntry({ ...entry, impressions: e.target.value })
-                }
+                }}
               />
+              <p className="sm:text-sm text-xs text-red-500 mt-2.5">
+                {errors?.impressions}
+              </p>
             </div>
           </div>
         </div>

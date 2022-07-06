@@ -13,7 +13,13 @@ export default async function handler(req, res) {
       },
     })
 
-    return res.status(200).send(client)
+    if (client) {
+      return res.status(200).send(client)
+    }
+
+    return res.status(404).send({
+      message: "This client does not exist!",
+    })
   }
 
   if (req.method === "PUT") {
@@ -41,13 +47,17 @@ export default async function handler(req, res) {
 
       if (updatePassword) {
         return res.status(201).send({
-          message: "Client password updated successfully!",
+          message: "Password updated successfully!",
         })
       }
+
+      return res.status(400).send({
+        message: "Bad Request!",
+      })
     }
 
-    return res.status(400).send({
-      message: "Bad Request!",
+    return res.status(404).send({
+      message: "This client does not exist!",
     })
   }
 }

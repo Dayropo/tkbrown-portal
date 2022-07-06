@@ -18,7 +18,7 @@ model admins {
 model billings {
   id             Int      @id @default(autoincrement())
   client_id      String   @db.VarChar(255)
-  client_email   String   @db.VarChar(255)
+  billing_email  String   @db.VarChar(255)
   bank_name      String?  @db.VarChar(255)
   account_number String?  @unique(map: "account_number") @db.VarChar(255)
   bank_swift     String?  @db.VarChar(255)
