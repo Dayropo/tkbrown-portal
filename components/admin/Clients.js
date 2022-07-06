@@ -34,7 +34,7 @@ const Clients = () => {
     const res = await axios.get("/api/clients/").catch(error => {
       console.error(error?.response)
     })
-    console.log(res)
+
     return res?.data
   })
 
