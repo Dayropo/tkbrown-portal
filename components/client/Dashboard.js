@@ -11,16 +11,16 @@ const Dashboard = ({ user }) => {
 
   // dashboard states
 
-  const { data: entries } = useSWR("entries", async () => {
+  const { data: entries, error: entriesError } = useSWR("entries", async () => {
     const res = await axios.get(`/api/entries/${clientId}`).catch(error => {
-      console.error(error?.response)
+      return error?.response
     })
     return res?.data
   })
 
-  const { data: sum } = useSWR("sum", async () => {
+  const { data: sum, error: sumError } = useSWR("sum", async () => {
     const res = await axios.get(`/api/entries/${clientId}/sum`).catch(error => {
-      console.error(error?.response)
+      return error?.response
     })
     return res?.data
   })

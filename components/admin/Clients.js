@@ -8,9 +8,9 @@ const Clients = () => {
   const inputStyles =
     "text-black font-normal bg-purple-50 px-4 pt-2 pb-1.5 border-b-2 border-gray-400 w-full placeholder:text-gray-400 hover:border-gray-400 focus:outline-none focus:ring-none focus:border-purple-600"
 
-  const { data } = useSWR("clients", async () => {
+  const { data, error } = useSWR("clients", async () => {
     const res = await axios.get("/api/clients/").catch(error => {
-      console.error(error?.response)
+      return error?.response
     })
 
     return res?.data
@@ -38,7 +38,6 @@ const Clients = () => {
           showConfirmButton: false,
           timer: 5000,
         })
-        console.error(err?.response)
       })
     if (res?.data) {
       Swal.fire({

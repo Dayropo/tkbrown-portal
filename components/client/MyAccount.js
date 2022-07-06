@@ -58,9 +58,9 @@ const MyAccount = () => {
   const router = useRouter()
   const { clientId } = router.query
 
-  const { data: client } = useSWR("client", async () => {
+  const { data: client, error } = useSWR("client", async () => {
     const res = await axios.get(`/api/clients/${clientId}`).catch(error => {
-      console.error(error?.response)
+      return error?.response
     })
     return res?.data
   })
@@ -280,7 +280,16 @@ const MyAccount = () => {
           bank_swift: bankDetails.bank_swift,
           bank_address: bankDetails.bank_address,
         })
-        .catch(error => console.error(error?.response))
+        .catch(error =>
+          Swal.fire({
+            toast: true,
+            icon: "error",
+            title: error?.response?.data?.message,
+            position: "top",
+            timer: 5000,
+            showConfirmButton: false,
+          })
+        )
       if (res?.status === 201 || 204) {
         Swal.fire({
           toast: true,
@@ -312,7 +321,16 @@ const MyAccount = () => {
           billing_email: billingEmail,
           paypal_email: paypalEmail,
         })
-        .catch(error => console.error(error?.response))
+        .catch(error =>
+          Swal.fire({
+            toast: true,
+            icon: "error",
+            title: error?.response?.data?.message,
+            position: "top",
+            timer: 5000,
+            showConfirmButton: false,
+          })
+        )
       if (res?.status === 201 || 204) {
         Swal.fire({
           toast: true,
@@ -337,7 +355,16 @@ const MyAccount = () => {
         .put(`/api/clients/${clientId}`, {
           password: password.new,
         })
-        .catch(error => console.error(error?.response))
+        .catch(error =>
+          Swal.fire({
+            toast: true,
+            icon: "error",
+            title: error?.response?.data?.message,
+            position: "top",
+            timer: 5000,
+            showConfirmButton: false,
+          })
+        )
       if (res?.status === 201) {
         Swal.fire({
           toast: true,

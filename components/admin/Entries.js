@@ -124,7 +124,16 @@ const Entries = () => {
           revenue: Number.parseFloat(entry.revenue),
           impressions: Number.parseInt(entry.impressions, 10),
         })
-        .catch(err => console.error(err?.response))
+        .catch(err => {
+          Swal.fire({
+            toast: true,
+            icon: "error",
+            title: err?.response?.data?.message,
+            position: "top",
+            timer: 5000,
+            showConfirmButton: false,
+          })
+        })
       if (res?.status === 201) {
         Swal.fire({
           toast: true,
@@ -144,9 +153,9 @@ const Entries = () => {
     }
   }
 
-  const { data: entries } = useSWR("entries", async () => {
+  const { data: entries, error } = useSWR("entries", async () => {
     const res = await axios.get("/api/entries/").catch(error => {
-      console.error(error?.response)
+      return error?.response
     })
 
     return res?.data

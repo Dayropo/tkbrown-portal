@@ -3,6 +3,8 @@ import { useState, useRef, useEffect, useContext } from "react"
 import { FaRegEye, FaRegEyeSlash } from "react-icons/fa"
 import { useRouter } from "next/router"
 import axios from "axios"
+import Logo from "../public/logo_transparent_background.png"
+import Image from "next/image"
 
 export default function Home() {
   const inputStyles =
@@ -34,7 +36,6 @@ export default function Home() {
         password: user.password,
       })
       .catch(err => {
-        console.error(err.response)
         setLoginError(err?.response?.data?.message)
       })
 
@@ -76,8 +77,12 @@ export default function Home() {
         <link rel="manifest" href="/site.webmanifest"></link>
       </Head>
 
-      <main className="flex items-center justify-center h-full">
-        <div className="bg-white py-5 px-10 rounded-xl shadow-lg">
+      <main className="flex items-center justify-center h-full flex-col">
+        <div className="w-56 h-28 relative flex">
+          <Image src={Logo} objectFit="contain" layout="fill" />
+        </div>
+
+        <div className="bg-white mt-6 py-5 px-10 rounded-xl shadow-lg">
           <form className="space-y-6">
             <p className="text-center text-gray-600 font-semibold">LOGIN</p>
 
