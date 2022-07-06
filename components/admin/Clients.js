@@ -100,7 +100,7 @@ const Clients = () => {
       <div className="py-4 mt-8">
         <span className="font-semibold text-lg">Clients</span>
         <div className="mt-8 flex flex-col">
-          <div className="flex sm:w-2/3 w-full py-3 bg-purple-300 rounded-t-md text-white items-end">
+          <div className="flex sm:w-2/3 w-full py-3 bg-purple-400 rounded-t-md text-white items-end">
             <span className="w-1/2 text-center sm:text-base text-sm px-2.5">
               Email
             </span>

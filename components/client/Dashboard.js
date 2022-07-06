@@ -34,15 +34,21 @@ const Dashboard = ({ user }) => {
       <div className="w-full mt-5 py-6 px-8 bg-purple-500 rounded-xl flex flex-wrap item-center justify-between text-white">
         <div>
           <p className="text-xs">Total Revenue</p>
-          <p className="sm:text-2xl text-xl">{`${sum?.total_revenue} €`}</p>
+          <p className="sm:text-2xl text-xl">{`${
+            sum?.total_revenue ? `${sum?.total_revenue} €` : ""
+          }`}</p>
         </div>
         <div>
           <p className="text-xs">Total Impressions</p>
-          <p className="sm:text-2xl text-xl">{`${sum?.total_impressions}`}</p>
+          <p className="sm:text-2xl text-xl">{`${
+            sum?.total_impressions ? sum?.total_impressions : ""
+          }`}</p>
         </div>
         <div>
           <p className="text-xs">eCPM</p>
-          <p className="sm:text-2xl text-xl">{eCPM.toFixed(2)}</p>
+          <p className="sm:text-2xl text-xl">{`${
+            eCPM ? eCPM.toFixed(2) : ""
+          }`}</p>
         </div>
       </div>
 
@@ -53,7 +59,7 @@ const Dashboard = ({ user }) => {
 
       {/**daily input */}
       <div className="mt-8 flex flex-col">
-        <div className="flex w-full py-3 bg-purple-300 rounded-t-md text-white items-end">
+        <div className="flex w-full py-3 bg-purple-400 rounded-t-md text-white items-end">
           <span className="w-1/4 text-center sm:text-base text-sm">Date</span>
           <span className="w-1/4 text-center sm:text-base text-sm">
             Revenue
