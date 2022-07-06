@@ -20,7 +20,7 @@ const AdminSidebar = ({ tab, setTab }) => {
           : "-translate-x-full shadow-none"
       }`}
     >
-      <div className="relative flex w-52 h-28 ">
+      <div className="relative flex lg:w-32 w-52 h-28 ">
         <Image
           src={Logo}
           layout="fill"
