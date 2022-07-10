@@ -5,6 +5,9 @@ import axios from "axios"
 import { useState } from "react"
 import LineChart from "../admin/LineChart"
 import { fetcher } from "../../lib/fetcher"
+import { FaSpinner } from "react-icons/fa"
+import Skeleton from "react-loading-skeleton"
+import "react-loading-skeleton/dist/skeleton.css"
 
 const Dashboard = ({ user }) => {
   const router = useRouter()
@@ -14,19 +17,6 @@ const Dashboard = ({ user }) => {
 
   // dashboard states
 
-  //get data for entries
-  const { data: entries, error: entriesError } = useSWR(
-    `/api/entries/${clientId}?index=${entryIndex}`,
-    fetcher
-  )
-
-  //get data for chart
-  const { data: chart, error: chartError } = useSWR(
-    `/api/entries/${clientId}`,
-    fetcher
-  )
-  const slicedChart = chart?.slice(-30)
-
   //get data for jumbo
   const { data: sum, error: sumError } = useSWR(
     `/api/entries/${clientId}/sum`,
@@ -35,11 +25,25 @@ const Dashboard = ({ user }) => {
 
   const eCPM = (sum?.total_revenue / sum?.total_impressions) * 1000
 
-  return (
-    <div className="py-4">
-      <span className="font-semibold text-lg">{`Welcome, ${user?.email}`}</span>
-      {/**summary */}
-      {sum && (
+  //get data for chart
+  const { data: chart, error: chartError } = useSWR(
+    `/api/entries/${clientId}`,
+    fetcher
+  )
+  const slicedChart = chart?.slice(-30)
+
+  //get data for entries
+  const { data: entries, error: entriesError } = useSWR(
+    `/api/entries/${clientId}?index=${entryIndex}`,
+    fetcher
+  )
+
+  if (sum && chart && entries) {
+    return (
+      <div className="py-4">
+        <span className="font-semibold text-lg">{`Welcome, ${user?.email}`}</span>
+        {/**summary */}
+
         <div className="w-full mt-5 py-6 px-8 bg-purple-500 rounded-xl flex flex-wrap item-center justify-between text-white">
           <div>
             <p className="text-xs">Total Revenue</p>
@@ -60,17 +64,15 @@ const Dashboard = ({ user }) => {
             }`}</p>
           </div>
         </div>
-      )}
 
-      {/**chart */}
-      {chart && (
+        {/**chart */}
+
         <div className="mt-8">
           <LineChart entries={slicedChart} />
         </div>
-      )}
 
-      {/**daily input */}
-      {entries && (
+        {/**daily input */}
+
         <div className="mt-8 flex flex-col">
           <div className="flex w-full py-3 bg-purple-400 rounded-t-md text-white items-end">
             <span className="w-1/4 text-center sm:text-base text-sm">Date</span>
@@ -128,7 +130,23 @@ const Dashboard = ({ user }) => {
             </button>
           </div>
         </div>
-      )}
+      </div>
+    )
+  }
+
+  return (
+    <div className="py-4">
+      <div className="w-full mt-5 py-6">
+        <Skeleton height={100} />
+      </div>
+
+      <div className="mt-8">
+        <Skeleton height={360} />
+      </div>
+
+      <div className="mt-8 flex flex-col">
+        <Skeleton height={250} />
+      </div>
     </div>
   )
 }
