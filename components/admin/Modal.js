@@ -1,6 +1,7 @@
 import { FiX } from "react-icons/fi"
 import useSWR from "swr"
 import { fetcher } from "../../lib/fetcher"
+import { FaSpinner } from "react-icons/fa"
 
 const Modal = ({ selectedId, setSelectedId }) => {
   const { data: client, error } = useSWR(`/api/clients/${selectedId}`, fetcher)
@@ -21,17 +22,20 @@ const Modal = ({ selectedId, setSelectedId }) => {
           <FiX size={20} />
         </button>
 
-        {client && (
+        {client && sum ? (
           <div className="px-8 py-1.5">
             <p className="font-semibold text-3xl mb-2.5">{`${client?.company}`}</p>
             <p className="font-semibold text-2xl mb-2.5">Summary</p>
-            {sum && (
-              <div className="text-lg">
-                <p>{`Total Revenue: ${sum?.total_revenue} €`} </p>
-                <p>{`Total Impressions: ${sum?.total_impressions}`}</p>
-                <p>{`eCPM: ${eCPM.toFixed(2)} €`}</p>
-              </div>
-            )}
+
+            <div className="text-lg">
+              <p>{`Total Revenue: ${sum?.total_revenue} €`} </p>
+              <p>{`Total Impressions: ${sum?.total_impressions}`}</p>
+              <p>{`eCPM: ${eCPM.toFixed(2)} €`}</p>
+            </div>
+          </div>
+        ) : (
+          <div className="py-8 px-32 flex items-center justify-center">
+            <FaSpinner size={32} className="animate-spin" />
           </div>
         )}
       </div>
