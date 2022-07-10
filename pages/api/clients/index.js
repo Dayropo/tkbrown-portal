@@ -42,7 +42,11 @@ export default async function clientHandler(req, res) {
   }
 
   if (req.method === "GET") {
-    const clients = await prisma.clients.findMany()
+    const { index } = req.query
+    const clients = await prisma.clients.findMany({
+      take: 5,
+      skip: index * 5,
+    })
 
     if (clients) {
       return res.status(200).send(clients)

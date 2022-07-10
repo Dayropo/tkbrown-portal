@@ -3,6 +3,7 @@ import useSWR from "swr"
 import axios from "axios"
 import { timestampToDate } from "../../utils/helpers"
 import Swal from "sweetalert2"
+import { fetcher } from "../../lib/fetcher"
 
 const Entries = () => {
   const inputStyles =
@@ -15,6 +16,8 @@ const Entries = () => {
     revenue: "",
     impressions: "",
   })
+
+  //entries input error state
   const [errors, setErrors] = useState({
     date: "",
     email: "",
@@ -22,6 +25,7 @@ const Entries = () => {
     impressions: "",
   })
 
+  // input validation
   const validate = () => {
     let isValid = true
     setErrors({
@@ -114,7 +118,7 @@ const Entries = () => {
   const addEntry = async e => {
     e.preventDefault()
 
-    let validation = await validate()
+    let validation = validate()
 
     if (validation) {
       const res = await axios
@@ -153,13 +157,12 @@ const Entries = () => {
     }
   }
 
-  const { data: entries, error } = useSWR("entries", async () => {
-    const res = await axios.get("/api/entries/").catch(error => {
-      return error?.response
-    })
+  const [entryIndex, setEntryIndex] = useState(0)
 
-    return res?.data
-  })
+  const { data: entries, error } = useSWR(
+    `/api/entries?index=${entryIndex}`,
+    fetcher
+  )
 
   return (
     <div className="py-4">
@@ -275,46 +278,75 @@ const Entries = () => {
       {/**view clients */}
       <div className="py-4 mt-8">
         <span className="font-semibold text-lg">Entries</span>
-        <div className="mt-8 flex flex-col">
-          <div className="flex w-full py-3 bg-purple-400 rounded-t-md text-white items-end">
-            <span className="w-1/5 text-center sm:text-base text-sm">Date</span>
-            <span className="w-1/5 text-center sm:text-base text-sm">
-              Client
-            </span>
-            <span className="w-1/5 text-center sm:text-base text-sm">
-              Revenue
-            </span>
-            <span className="w-1/5 text-center sm:text-base text-sm">
-              Impressions
-            </span>
-            <span className="w-1/5 text-center sm:text-base text-sm">eCPM</span>
-          </div>
-          {/**entry mapping */}
-          {entries?.map((el, index) => (
-            <div
-              key={index}
-              className={`${
-                index === entries?.length - 1 ? "rounded-b-md" : null
-              } flex w-full py-3 bg-white text-black items-center`}
-            >
-              <span className="w-1/5 text-center sm:text-base text-sm px-2.5">
-                {el?.posted_at}
+        {entries && (
+          <div className="mt-8 flex flex-col">
+            <div className="flex w-full py-3 bg-purple-400 rounded-t-md text-white items-end">
+              <span className="w-1/5 text-center sm:text-base text-sm">
+                Date
               </span>
-              <span className="w-1/5 text-center sm:text-base text-sm px-2.5 break-words">
-                {el?.client_email}
+              <span className="w-1/5 text-center sm:text-base text-sm">
+                Client
               </span>
-              <span className="w-1/5 text-center sm:text-base text-sm px-2.5">
-                {el?.revenue}
+              <span className="w-1/5 text-center sm:text-base text-sm">
+                Revenue
               </span>
-              <span className="w-1/5 text-center sm:text-base text-sm px-2.5">
-                {el?.impressions}
+              <span className="w-1/5 text-center sm:text-base text-sm">
+                Impressions
               </span>
-              <span className="w-1/5 text-center sm:text-base text-sm px-2.5">
-                {el?.eCPM}
+              <span className="w-1/5 text-center sm:text-base text-sm">
+                eCPM
               </span>
             </div>
-          ))}
-        </div>
+            {/**entry mapping */}
+            {entries?.map((el, index) => (
+              <div
+                key={index}
+                className={`${
+                  index === entries?.length - 1 ? "rounded-b-md" : null
+                } flex w-full py-3 bg-white text-black items-center`}
+              >
+                <span className="w-1/5 text-center sm:text-base text-sm px-2.5">
+                  {el?.posted_at}
+                </span>
+                <span className="w-1/5 text-center sm:text-base text-sm px-2.5 break-words">
+                  {el?.client_email}
+                </span>
+                <span className="w-1/5 text-center sm:text-base text-sm px-2.5">
+                  {el?.revenue}
+                </span>
+                <span className="w-1/5 text-center sm:text-base text-sm px-2.5">
+                  {el?.impressions}
+                </span>
+                <span className="w-1/5 text-center sm:text-base text-sm px-2.5">
+                  {el?.eCPM}
+                </span>
+              </div>
+            ))}
+
+            <div
+              className={`${
+                entryIndex ? "justify-between" : "justify-end"
+              } w-full flex items-center bg-white py-2.5 px-4`}
+            >
+              <button
+                className={`${
+                  entryIndex ? "flex" : "hidden"
+                } bg-purple-400 text-white py-1.5 px-6 rounded-2xl`}
+                onClick={() => setEntryIndex(entryIndex - 1)}
+              >
+                Prev
+              </button>
+              <button
+                className={`${
+                  entries?.length < 7 ? "hidden" : "flex"
+                } bg-purple-400 text-white py-1.5 px-6 rounded-2xl`}
+                onClick={() => setEntryIndex(entryIndex + 1)}
+              >
+                Next
+              </button>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   )
