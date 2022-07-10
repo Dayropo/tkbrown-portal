@@ -36,7 +36,10 @@ export default async function handler(req, res) {
   }
 
   if (req.method === "GET") {
+    const { index } = req.query
     const entries = await prisma.entries.findMany({
+      take: 7,
+      skip: index * 7,
       orderBy: {
         posted_at: "asc",
       },

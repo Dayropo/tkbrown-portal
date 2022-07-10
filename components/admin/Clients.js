@@ -2,19 +2,22 @@ import { useState } from "react"
 import useSWR from "swr"
 import axios from "axios"
 import { FiX } from "react-icons/fi"
+import { FaSpinner } from "react-icons/fa"
 import Swal from "sweetalert2"
+import { fetcher } from "../../lib/fetcher"
+import Modal from "./Modal"
 
 const Clients = () => {
   const inputStyles =
     "text-black font-normal bg-purple-50 px-4 pt-2 pb-1.5 border-b-2 border-gray-400 w-full placeholder:text-gray-400 hover:border-gray-400 focus:outline-none focus:ring-none focus:border-purple-600"
+  const [clientIndex, setClientIndex] = useState(0)
+  const [selectedId, setSelectedId] = useState("")
 
-  const { data, error } = useSWR("clients", async () => {
-    const res = await axios.get("/api/clients/").catch(error => {
-      return error?.response
-    })
+  const { data, error } = useSWR(`/api/clients?index=${clientIndex}`, fetcher)
 
-    return res?.data
-  })
+  if (error) {
+    console.error(error.response.message)
+  }
 
   // client input state
   const [client, setClient] = useState({
@@ -54,6 +57,9 @@ const Clients = () => {
 
   return (
     <div className="py-4 relative">
+      {selectedId && (
+        <Modal selectedId={selectedId} setSelectedId={setSelectedId} />
+      )}
       <span className="font-semibold text-lg">Add a new Client</span>
       {/**add client form */}
       <form className="w-full mt-8">
@@ -98,32 +104,59 @@ const Clients = () => {
       {/**view clients */}
       <div className="py-4 mt-8">
         <span className="font-semibold text-lg">Clients</span>
-        <div className="mt-8 flex flex-col">
-          <div className="flex sm:w-2/3 w-full py-3 bg-purple-400 rounded-t-md text-white items-end">
-            <span className="w-1/2 text-center sm:text-base text-sm px-2.5">
-              Email
-            </span>
-            <span className="w-1/2 text-center sm:text-base text-sm px-2.5">
-              Company Name
-            </span>
-          </div>
-          {/**client mapping */}
-          {data?.map((client, index) => (
-            <div
-              className={`${
-                index === data.length - 1 ? "rounded-b-md" : null
-              } flex sm:w-2/3 w-full py-3 bg-white text-black items-center divide-x-1 divide-black`}
-              key={client?.id}
-            >
-              <span className="w-1/2 text-center sm:text-base text-sm px-2.5 break-words">
-                {client?.email}
+        {data && (
+          <div className="mt-8 flex flex-col">
+            <div className="flex sm:w-2/3 w-full py-3 bg-purple-400 rounded-t-md text-white items-end">
+              <span className="w-1/2 text-center sm:text-base text-sm px-2.5">
+                Email
               </span>
-              <span className="w-1/2 text-center sm:text-base text-sm px-2.5 break-words">
-                {client?.company}
+              <span className="w-1/2 text-center sm:text-base text-sm px-2.5">
+                Company Name
               </span>
             </div>
-          ))}
-        </div>
+
+            {/**client mapping */}
+            {data?.map((client, index) => (
+              <div
+                className={`${
+                  index === data.length - 1 ? "rounded-b-md" : null
+                } flex sm:w-2/3 w-full py-3 bg-white text-black items-center divide-x-1 divide-black`}
+                key={client?.id}
+                onClick={() => setSelectedId(client?.id)}
+              >
+                <span className="w-1/2 text-center sm:text-base text-sm px-2.5 break-words">
+                  {client?.email}
+                </span>
+                <span className="w-1/2 text-center sm:text-base text-sm px-2.5 break-words">
+                  {client?.company}
+                </span>
+              </div>
+            ))}
+
+            <div
+              className={`${
+                clientIndex ? "justify-between" : "justify-end"
+              } sm:w-2/3 w-full flex items-center bg-white py-2.5 px-4`}
+            >
+              <button
+                className={`${
+                  clientIndex ? "flex" : "hidden"
+                } bg-purple-400 text-white py-1.5 px-6 rounded-2xl`}
+                onClick={() => setClientIndex(clientIndex - 1)}
+              >
+                Prev
+              </button>
+              <button
+                className={`${
+                  data?.length < 5 ? "hidden" : "flex"
+                } bg-purple-400 text-white py-1.5 px-6 rounded-2xl`}
+                onClick={() => setClientIndex(clientIndex + 1)}
+              >
+                Next
+              </button>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   )
