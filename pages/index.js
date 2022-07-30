@@ -40,10 +40,10 @@ export default function Home() {
       })
 
     if (res?.data?.user) {
-      router.push(`/dashboard/${res?.data?.id}`)
+      router.push("/dashboard/")
     }
     if (res?.data?.admin) {
-      router.push("/dashboard")
+      router.push("/admin")
     }
   }
 

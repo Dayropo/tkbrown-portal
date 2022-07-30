@@ -27,7 +27,7 @@ const Clients = () => {
   const addClient = async e => {
     e.preventDefault()
     const res = await axios
-      .post("/api/clients/", {
+      .post("/api/clients/test/", {
         email: client.email,
         company: client.company,
       })

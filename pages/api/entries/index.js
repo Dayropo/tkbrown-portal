@@ -9,7 +9,8 @@ export default async function handler(req, res) {
     const impressions = data.impressions
     const eCPM = (revenue / impressions) * 1000
 
-    const client = await prisma.clients.findUnique({
+    // const client = await prisma.clients.findUnique({
+    const client = await prisma.clients_test.findUnique({
       where: {
         email: data.client_email,
       },
