@@ -64,18 +64,41 @@ export default async function clientHandler(req, res) {
   }
 
   if (req.method === "GET") {
-    const { index } = req.query
-    const clients = await prisma.clients_test.findMany({
-      take: 5,
-      skip: index * 5,
-    })
+    if (req.query.index) {
+      const { index } = req.query
+      const clients = await prisma.clients_test.findMany({
+        take: 5,
+        skip: index * 5,
+      })
 
-    if (clients) {
-      return res.status(200).send(clients)
+      if (clients) {
+        return res.status(200).send(clients)
+      }
+
+      return res.status(404).send({
+        message: "No clients found!",
+      })
     }
 
-    return res.status(404).send({
-      message: "No clients found!",
-    })
+    if (req.query.email) {
+      const { email } = req.query
+      const client = await prisma.clients_test.findMany({
+        where: {
+          email: email,
+        },
+        select: {
+          email: true,
+          company: true,
+        },
+      })
+
+      if (client) {
+        return res.status(200).send(client)
+      }
+
+      return res.status(404).send({
+        message: "No clients found!",
+      })
+    }
   }
 }

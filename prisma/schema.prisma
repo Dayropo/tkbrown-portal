@@ -30,7 +30,7 @@ model billings {
 
 model clients {
   id         String   @id @db.VarChar(255)
-  email      String   @unique(map: "email") @db.VarChar(255)
+  email      String   @db.VarChar(255)
   password   String   @db.VarChar(255)
   role       String   @default("user") @db.VarChar(255)
   company    String   @db.VarChar(255)
@@ -39,22 +39,24 @@ model clients {
 }
 
 model entries {
-  id           Int      @id @default(autoincrement())
-  posted_at    String   @db.VarChar(255)
-  client_id    String   @db.VarChar(255)
-  client_email String   @db.VarChar(255)
-  revenue      Decimal  @db.Decimal(16, 2)
-  impressions  Int
-  eCPM         Decimal  @db.Decimal(10, 2)
-  created_at   DateTime @default(now()) @db.DateTime(0)
+  id             Int      @id @default(autoincrement())
+  posted_at      String   @db.VarChar(255)
+  client_id      String   @db.VarChar(255)
+  client_email   String   @db.VarChar(255)
+  revenue        Decimal  @db.Decimal(16, 2)
+  impressions    Int
+  eCPM           Decimal  @db.Decimal(10, 2)
+  created_at     DateTime @default(now()) @db.DateTime(0)
+  client_company String?  @db.VarChar(255)
 }
 
 model clients_test {
-  id         String   @id @db.VarChar(255)
-  email      String   @db.VarChar(255)
-  password   String   @db.VarChar(255)
-  role       String   @default("user") @db.VarChar(255)
-  company    String   @db.VarChar(255)
-  created_at DateTime @default(now()) @db.DateTime(0)
-  updated_at DateTime @default(now()) @db.DateTime(0)
+  id             String   @id @db.VarChar(255)
+  email          String   @db.VarChar(255)
+  password       String   @db.VarChar(255)
+  role           String   @default("user") @db.VarChar(255)
+  company        String   @db.VarChar(255)
+  created_at     DateTime @default(now()) @db.DateTime(0)
+  updated_at     DateTime @default(now()) @db.DateTime(0)
+  client_company String?  @db.VarChar(255)
 }

@@ -9,7 +9,7 @@ import { FaSpinner } from "react-icons/fa"
 import Skeleton from "react-loading-skeleton"
 import "react-loading-skeleton/dist/skeleton.css"
 
-const Dashboard = ({ user }) => {
+const Dashboard = ({ user, company }) => {
   const router = useRouter()
   const { clientId } = router.query
 
@@ -19,7 +19,7 @@ const Dashboard = ({ user }) => {
 
   //get data for jumbo
   const { data: sum, error: sumError } = useSWR(
-    `/api/entries/${clientId}/sum`,
+    `/api/entries/sum?email=${user?.email}&company=${company}`,
     fetcher
   )
 
@@ -27,21 +27,21 @@ const Dashboard = ({ user }) => {
 
   //get data for chart
   const { data: chart, error: chartError } = useSWR(
-    `/api/entries/${clientId}`,
+    `/api/entries/client/chart?company=${company}`,
     fetcher
   )
   const slicedChart = chart?.slice(-30)
 
   //get data for entries
   const { data: entries, error: entriesError } = useSWR(
-    `/api/entries/${clientId}?index=${entryIndex}`,
+    `/api/entries/client?company=${company}`,
     fetcher
   )
 
-  if (sum && chart && entries) {
+  if (sum && chart.length > 0 && entries.length > 0) {
     return (
       <div className="py-4">
-        <span className="font-semibold text-lg">{`Welcome, ${user?.email}`}</span>
+        <span className="font-semibold text-lg">{`Welcome, ${company}`}</span>
         {/**summary */}
 
         <div className="w-full mt-5 py-6 px-8 bg-purple-500 rounded-xl flex flex-wrap item-center justify-between text-white">

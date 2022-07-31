@@ -4,19 +4,20 @@ const prisma = new PrismaClient()
 
 export default async function handler(req, res) {
   if (req.method === "GET") {
-    const { clientId } = req.query
+    const { email, company } = req.query
 
-    const client = await prisma.clients.findUnique({
+    const client = await prisma.clients.findFirst({
       where: {
-        id: clientId,
+        email,
+        company,
       },
     })
 
     if (client) {
       const total_revenue =
-        await prisma.$queryRaw`SELECT SUM(revenue) AS 'total_revenue' FROM entries WHERE client_id = ${clientId}`
+        await prisma.$queryRaw`SELECT SUM(revenue) AS 'total_revenue' FROM entries WHERE client_email = ${email} AND client_company = ${company}`
       const total_impressions =
-        await prisma.$queryRaw`SELECT SUM(impressions) AS 'total_impressions' FROM entries WHERE client_id = ${clientId}`
+        await prisma.$queryRaw`SELECT SUM(impressions) AS 'total_impressions' FROM entries WHERE client_email = ${email} AND client_company = ${company}`
 
       return res.status(200).send({
         total_revenue: total_revenue[0].total_revenue,

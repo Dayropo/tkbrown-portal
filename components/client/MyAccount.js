@@ -7,7 +7,7 @@ import payPal from "../../public/paypal.png"
 import { useState } from "react"
 import Swal from "sweetalert2"
 
-const MyAccount = () => {
+const MyAccount = ({ user }) => {
   //form styles
   const inputStyles =
     "text-black font-normal bg-purple-50 px-4 pt-2 pb-1.5 border-b-2 border-gray-400 w-full placeholder:text-gray-400 hover:border-gray-400 focus:outline-none focus:ring-none focus:border-purple-600"
@@ -59,9 +59,11 @@ const MyAccount = () => {
   const { clientId } = router.query
 
   const { data: client, error } = useSWR("client", async () => {
-    const res = await axios.get(`/api/clients/${clientId}`).catch(error => {
-      return error?.response
-    })
+    const res = await axios
+      .get(`/api/clients?email=${user?.email}`)
+      .catch(error => {
+        return error?.response
+      })
     return res?.data
   })
 
@@ -352,7 +354,8 @@ const MyAccount = () => {
     const validation = validateUpdatePassword()
     if (validation) {
       const res = await axios
-        .put(`/api/clients/${clientId}`, {
+        // .put(`/api/clients/${clientId}`, {
+        .put(`/api/clients?email=${user?.email}`, {
           password: password.new,
         })
         .catch(error =>
