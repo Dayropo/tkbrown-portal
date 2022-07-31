@@ -38,7 +38,7 @@ const Dashboard = ({ user, company }) => {
     fetcher
   )
 
-  if (sum && chart.length > 0 && entries.length > 0) {
+  if (sum && chart?.length > 0 && entries?.length > 0) {
     return (
       <div className="py-4">
         <span className="font-semibold text-lg">{`Welcome, ${company}`}</span>

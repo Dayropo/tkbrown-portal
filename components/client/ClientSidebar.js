@@ -11,7 +11,7 @@ const ClientSidebar = ({ tab, setTab, data, domainIndex, setDomainIndex }) => {
   const { showClientSidebar, setShowClientSidebar } = useContext(SidebarContext)
   const [showSubMenu, setShowSubMenu] = useState(false)
   const currentTab =
-    "py-4 px-8 before:absolute before:h-[52px] before:w-1.5 before:left-0 before:bg-purple-400 cursor-pointer flex relative items-center w-full font-semibold"
+    "py-4 px-8 before:absolute before:h-[54px] before:w-1.5 before:left-0 before:bg-purple-400 cursor-pointer flex relative items-center w-full font-semibold"
   // const currentTab =
   //   "py-4 px-8 rounded-l-full text-white bg-purple-400 cursor-pointer flex relative items-center w-full font-semibold"
   const regularTab =
