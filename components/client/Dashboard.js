@@ -6,6 +6,7 @@ import LineChart from "../admin/LineChart"
 import { fetcher } from "../../lib/fetcher"
 import Skeleton from "react-loading-skeleton"
 import "react-loading-skeleton/dist/skeleton.css"
+import { MdAddchart } from "react-icons/md"
 
 const Dashboard = ({ user, company }) => {
   // const [entryIndex, setEntryIndex] = useState(0)
@@ -108,7 +109,7 @@ const Dashboard = ({ user, company }) => {
 
             {/**chart */}
 
-            <div className="mt-8 bg-white p-4 rounded-lg relative w-full">
+            <div className="mt-8 bg-white p-4 rounded-lg relative w-full h-[50vh]">
               <LineChart entries={slicedChart} />
             </div>
 
@@ -177,8 +178,11 @@ const Dashboard = ({ user, company }) => {
             </div>
           </div>
         ) : (
-          <div className="flex items-center justify-center">
-            <div></div>
+          <div className="flex h-[50vh] items-center justify-center">
+            <div className="text-center">
+              <MdAddchart size={200} className="text-purple-500" />
+              <p className="font-medium text-gray-400">No data collected</p>
+            </div>
           </div>
         )}
       </div>

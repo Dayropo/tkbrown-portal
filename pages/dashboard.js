@@ -7,13 +7,15 @@ import { sessionOptions } from "../lib/session"
 import ClientMenu from "../components/client/ClientMenu"
 import { FiX, FiMenu } from "react-icons/fi"
 import Dashboard from "../components/client/Dashboard"
-import MyAccount from "../components/client/MyAccount"
 import ClientSidebar from "../components/client/ClientSidebar"
 import { SidebarContext } from "../context/SidebarContext"
 import Head from "next/head"
 import { fetcher } from "../lib/fetcher"
 import Logo from "../public/logo_transparent_background.png"
 import Image from "next/image"
+import Billing from "../components/client/Billing"
+import Settings from "../components/client/Settings"
+import Payments from "../components/client/Payments"
 
 export const getServerSideProps = withIronSessionSsr(async function ({
   req,
@@ -116,7 +118,15 @@ const ClientDetails = ({ user }) => {
             <Dashboard user={user} company={data[domainIndex]?.company} />
           )}
 
-          {tab === "account" && <MyAccount user={user} />}
+          {tab === "billing" && (
+            <Billing user={user} company={data[domainIndex]?.company} />
+          )}
+
+          {tab === "settings" && <Settings user={user} />}
+
+          {tab === "payments" && (
+            <Payments user={user} company={data[domainIndex]?.company} />
+          )}
         </main>
       </div>
     )
