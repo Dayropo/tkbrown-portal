@@ -33,7 +33,7 @@ async function login(req, res) {
     }
 
     if (!admin) {
-      const client = await prisma.clients.findUnique({
+      const client = await prisma.clients.findFirst({
         where: {
           email: req.body.email,
         },
