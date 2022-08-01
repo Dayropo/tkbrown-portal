@@ -20,7 +20,7 @@ const ClientMenu = ({ setTab, setIsOpen }) => {
         <span
           className="flex items-center justify-between py-3 px-6 cursor-pointer hover:bg-purple-100"
           onClick={() => {
-            setTab("account")
+            setTab("settings")
             setIsOpen(false)
           }}
         >

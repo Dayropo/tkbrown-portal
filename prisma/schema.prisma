@@ -17,20 +17,20 @@ model admins {
 
 model billings {
   id             Int      @id @default(autoincrement())
-  client_id      String   @db.VarChar(255)
+  client_company String   @unique(map: "client_company") @db.VarChar(255)
   billing_email  String   @db.VarChar(255)
   bank_name      String?  @db.VarChar(255)
-  account_number String?  @unique(map: "account_number") @db.VarChar(255)
+  account_number String?  @db.VarChar(255)
   bank_swift     String?  @db.VarChar(255)
   bank_address   String?  @db.VarChar(255)
-  paypal_email   String?  @unique(map: "paypal_email") @db.VarChar(255)
+  paypal_email   String?  @db.VarChar(255)
   created_at     DateTime @default(now()) @db.DateTime(0)
   updated_at     DateTime @default(now()) @db.DateTime(0)
 }
 
 model clients {
   id         String   @id @db.VarChar(255)
-  email      String   @unique(map: "email") @db.VarChar(255)
+  email      String   @db.VarChar(255)
   password   String   @db.VarChar(255)
   role       String   @default("user") @db.VarChar(255)
   company    String   @db.VarChar(255)
@@ -39,12 +39,13 @@ model clients {
 }
 
 model entries {
-  id           Int      @id @default(autoincrement())
-  posted_at    String   @db.VarChar(255)
-  client_id    String   @db.VarChar(255)
-  client_email String   @db.VarChar(255)
-  revenue      Decimal  @db.Decimal(16, 2)
-  impressions  Int
-  eCPM         Decimal  @db.Decimal(10, 2)
-  created_at   DateTime @default(now()) @db.DateTime(0)
+  id             Int      @id @default(autoincrement())
+  posted_at      String   @db.VarChar(255)
+  client_id      String   @db.VarChar(255)
+  client_email   String   @db.VarChar(255)
+  revenue        Decimal  @db.Decimal(16, 2)
+  impressions    Int
+  eCPM           Decimal  @db.Decimal(10, 2)
+  created_at     DateTime @default(now()) @db.DateTime(0)
+  client_company String?  @db.VarChar(255)
 }

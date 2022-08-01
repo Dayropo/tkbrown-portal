@@ -9,9 +9,9 @@ export default async function handler(req, res) {
     const impressions = data.impressions
     const eCPM = (revenue / impressions) * 1000
 
-    const client = await prisma.clients.findUnique({
+    const client = await prisma.clients.findFirst({
       where: {
-        email: data.client_email,
+        company: data.client_company,
       },
     })
 
@@ -21,6 +21,7 @@ export default async function handler(req, res) {
           posted_at: data.posted_at,
           client_id: client.id,
           client_email: client.email,
+          client_company: data.client_company,
           revenue,
           impressions,
           eCPM,
@@ -41,7 +42,7 @@ export default async function handler(req, res) {
       take: 7,
       skip: index * 7,
       orderBy: {
-        posted_at: "asc",
+        posted_at: "desc",
       },
     })
 

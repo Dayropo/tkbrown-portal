@@ -12,7 +12,7 @@ const Entries = () => {
   //entries input state and functions
   const [entry, setEntry] = useState({
     date: "",
-    client_email: "",
+    client_company: "",
     revenue: "",
     impressions: "",
   })
@@ -20,7 +20,7 @@ const Entries = () => {
   //entries input error state
   const [errors, setErrors] = useState({
     date: "",
-    email: "",
+    company: "",
     revenue: "",
     impressions: "",
   })
@@ -30,7 +30,7 @@ const Entries = () => {
     let isValid = true
     setErrors({
       date: "",
-      email: "",
+      company: "",
       revenue: "",
       impressions: "",
     })
@@ -72,27 +72,35 @@ const Entries = () => {
       }))
     }
 
-    if (entry?.client_email) {
-      const pattern = new RegExp(
-        /^(("[\w-\s]+")|([\w-]+(?:\.[\w-]+)*)|("[\w-\s]+")([\w-]+(?:\.[\w-]+)*))(@((?:[\w-]+\.)*\w[\w-]{0,66})\.([a-z]{2,6}(?:\.[a-z]{2})?)$)|(@\[?((25[0-5]\.|2[0-4][0-9]\.|1[0-9]{2}\.|[0-9]{1,2}\.))((25[0-5]|2[0-4][0-9]|1[0-9]{2}|[0-9]{1,2})\.){2}(25[0-5]|2[0-4][0-9]|1[0-9]{2}|[0-9]{1,2})\]?$)/i
-      )
-      if (pattern.test(entry?.client_email)) {
-        setErrors(prevState => ({
-          ...prevState,
-          email: "",
-        }))
-      } else {
-        isValid = false
-        setErrors(prevState => ({
-          ...prevState,
-          email: "Provide a valid email",
-        }))
-      }
-    } else {
+    // if (entry?.client_company) {
+    //   const pattern = new RegExp(
+    //     /^(("[\w-\s]+")|([\w-]+(?:\.[\w-]+)*)|("[\w-\s]+")([\w-]+(?:\.[\w-]+)*))(@((?:[\w-]+\.)*\w[\w-]{0,66})\.([a-z]{2,6}(?:\.[a-z]{2})?)$)|(@\[?((25[0-5]\.|2[0-4][0-9]\.|1[0-9]{2}\.|[0-9]{1,2}\.))((25[0-5]|2[0-4][0-9]|1[0-9]{2}|[0-9]{1,2})\.){2}(25[0-5]|2[0-4][0-9]|1[0-9]{2}|[0-9]{1,2})\]?$)/i
+    //   )
+    //   if (pattern.test(entry?.client_company)) {
+    //     setErrors(prevState => ({
+    //       ...prevState,
+    //       company: "",
+    //     }))
+    //   } else {
+    //     isValid = false
+    //     setErrors(prevState => ({
+    //       ...prevState,
+    //       company: "Provide a valid company",
+    //     }))
+    //   }
+    // } else {
+    //   isValid = false
+    //   setErrors(prevState => ({
+    //     ...prevState,
+    //     company: "This field is required",
+    //   }))
+    // }
+
+    if (!entry?.client_company) {
       isValid = false
       setErrors(prevState => ({
         ...prevState,
-        email: "This field is required",
+        revenue: "This field is required",
       }))
     }
 
@@ -124,7 +132,7 @@ const Entries = () => {
       const res = await axios
         .post("/api/entries/", {
           posted_at: entry.date,
-          client_email: entry.client_email,
+          client_company: entry.client_company,
           revenue: Number.parseFloat(entry.revenue),
           impressions: Number.parseInt(entry.impressions, 10),
         })
@@ -149,7 +157,7 @@ const Entries = () => {
         })
         setEntry({
           date: "",
-          client_email: "",
+          client_company: "",
           revenue: "",
           impressions: "",
         })
@@ -183,7 +191,7 @@ const Entries = () => {
                 onChange={e => {
                   setErrors({
                     date: "",
-                    email: "",
+                    company: "",
                     revenue: "",
                     impressions: "",
                   })
@@ -201,19 +209,19 @@ const Entries = () => {
                 placeholder="Client *"
                 required
                 className={inputStyles}
-                value={entry.client_email}
+                value={entry.client_company}
                 onChange={e => {
                   setErrors({
                     date: "",
-                    email: "",
+                    company: "",
                     revenue: "",
                     impressions: "",
                   })
-                  setEntry({ ...entry, client_email: e.target.value })
+                  setEntry({ ...entry, client_company: e.target.value })
                 }}
               />
               <p className="sm:text-sm text-xs text-red-500 mt-2.5">
-                {errors?.email}
+                {errors?.company}
               </p>
             </div>
           </div>
@@ -231,7 +239,7 @@ const Entries = () => {
                 onChange={e => {
                   setErrors({
                     date: "",
-                    email: "",
+                    company: "",
                     revenue: "",
                     impressions: "",
                   })
@@ -254,7 +262,7 @@ const Entries = () => {
                 onChange={e => {
                   setErrors({
                     date: "",
-                    email: "",
+                    company: "",
                     revenue: "",
                     impressions: "",
                   })
@@ -309,7 +317,7 @@ const Entries = () => {
                   {el?.posted_at}
                 </span>
                 <span className="w-1/5 text-center sm:text-base text-sm px-2.5 break-words">
-                  {el?.client_email}
+                  {el?.client_company}
                 </span>
                 <span className="w-1/5 text-center sm:text-base text-sm px-2.5">
                   {el?.revenue}
