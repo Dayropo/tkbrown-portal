@@ -9,6 +9,7 @@ import { FiX, FiMenu } from "react-icons/fi"
 import { SidebarContext } from "../context/SidebarContext"
 import AdminSidebar from "../components/admin/AdminSidebar"
 import Head from "next/head"
+import Billings from "../components/admin/Billings"
 
 export const getServerSideProps = withIronSessionSsr(async function ({
   req,
@@ -91,6 +92,8 @@ const Dashboard = ({ user }) => {
         {tab === "clients" && <Clients />}
 
         {tab === "entries" && <Entries />}
+
+        {tab === "billings" && <Billings />}
       </main>
     </div>
   )
