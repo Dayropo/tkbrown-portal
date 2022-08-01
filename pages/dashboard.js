@@ -106,7 +106,7 @@ const ClientDetails = ({ user }) => {
         </nav>
 
         <main
-          className="sm:px-16 sm:py-10 px-4 py-2.5"
+          className="sm:px-16 px-4 py-2.5"
           onClick={() => {
             setIsOpen(false)
             setShowClientSidebar(false)

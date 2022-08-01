@@ -1,26 +1,31 @@
-import { data } from "autoprefixer"
 import {
   Chart as ChartJS,
   CategoryScale,
   LinearScale,
+  BarElement,
   PointElement,
   LineElement,
   Title,
   Tooltip,
   Legend,
   Filler,
+  LineController,
+  BarController,
 } from "chart.js"
-import { Line } from "react-chartjs-2"
+import { Line, Chart } from "react-chartjs-2"
 
 ChartJS.register(
   CategoryScale,
   LinearScale,
+  BarElement,
   PointElement,
   LineElement,
   Title,
   Tooltip,
   Legend,
-  Filler
+  Filler,
+  LineController,
+  BarController
 )
 
 const LineChart = ({ entries }) => {
@@ -31,16 +36,28 @@ const LineChart = ({ entries }) => {
         label: "Revenue",
         data: entries?.map(entry => entry.revenue),
         yAxisID: "y",
+        type: "line",
+        backgroundColor: "rgb(96, 165, 250, 0.25)",
+        borderColor: "rgb(96, 165, 250, 1)",
+        borderWidth: 2,
       },
       {
         label: "Impressions",
         data: entries?.map(entry => entry.impressions),
         yAxisID: "y1",
+        type: "bar",
+        // backgroundColor: "rgb(156, 163, 175, 1)",
+        // borderColor: "rgb(156, 163, 175, 1)",
+        borderWidth: 2,
       },
       {
         label: "eCPM",
         data: entries?.map(entry => entry.eCPM),
         yAxisID: "y2",
+        type: "line",
+        backgroundColor: "rgb(248, 113, 113, 0.25)",
+        borderColor: "rgb(248, 113, 113, 1)",
+        borderWidth: 2,
       },
     ],
   }
@@ -48,33 +65,27 @@ const LineChart = ({ entries }) => {
   const options = {
     elements: {
       line: {
-        tension: 0.8,
+        tension: 0.5,
         fill: "start",
-        borderWidth: 2,
-        borderColor: [
-          "rgba(255, 99, 132, 1)",
-          "rgba(54, 162, 235, 1)",
-          "rgba(255, 206, 86, 1)",
-          "rgba(75, 192, 192, 1)",
-          "rgba(153, 102, 255, 1)",
-          "rgba(255, 159, 64, 1)",
-        ],
-        backgroundColor: [
-          "rgba(255, 99, 132, 0.2)",
-          "rgba(54, 162, 235, 0.2)",
-          "rgba(255, 206, 86, 0.2)",
-          "rgba(75, 192, 192, 0.2)",
-          "rgba(153, 102, 255, 0.2)",
-          "rgba(255, 159, 64, 0.2)",
-        ],
+      },
+      point: {
+        radius: 0,
       },
     },
     scales: {
+      x: {
+        grid: {
+          display: false,
+        },
+      },
       y: {
         type: "linear",
         display: true,
         position: "left",
         beginAtZero: true,
+        grid: {
+          drawOnChartArea: false, // only want the grid lines for one axis to show up
+        },
       },
       y1: {
         type: "linear",
@@ -99,9 +110,16 @@ const LineChart = ({ entries }) => {
         },
       },
     },
+    interaction: {
+      mode: "nearest",
+      axis: "x",
+      intersect: false,
+    },
+    maintainAspectRatio: false,
   }
 
-  return <Line data={data} height={40} width={100} options={options} />
+  // return <Line data={data} height={40} width={100} options={options} />
+  return <Chart type="bar" data={data} options={options} />
 }
 
 export default LineChart
