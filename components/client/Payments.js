@@ -1,3 +1,4 @@
+import Skeleton from "react-loading-skeleton"
 import useSWR from "swr"
 import { fetcher } from "../../lib/fetcher"
 
@@ -21,6 +22,18 @@ const Payments = ({ user, company }) => {
       </div>
     )
   }
+
+  return (
+    <div className="py-4">
+      <div className="w-full mt-5">
+        <Skeleton height={120} />
+      </div>
+
+      <div className="mt-2.5 w-full">
+        <Skeleton height={120} />
+      </div>
+    </div>
+  )
 }
 
 export default Payments
