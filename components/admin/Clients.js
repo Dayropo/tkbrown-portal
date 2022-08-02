@@ -6,11 +6,11 @@ import Swal from "sweetalert2"
 import { fetcher } from "../../lib/fetcher"
 import Modal from "./Modal"
 
-const Clients = () => {
+const Clients = ({ user }) => {
   const inputStyles =
     "text-black font-normal bg-purple-50 px-4 pt-2 pb-1.5 border-b-2 border-gray-400 w-full placeholder:text-gray-400 hover:border-gray-400 focus:outline-none focus:ring-none focus:border-purple-600"
   const [clientIndex, setClientIndex] = useState(0)
-  const [selectedId, setSelectedId] = useState("")
+  const [selectedClient, setSelectedClient] = useState({})
 
   const { data, error } = useSWR(`/api/clients?index=${clientIndex}`, fetcher)
 
@@ -56,8 +56,12 @@ const Clients = () => {
 
   return (
     <div className="py-4 relative">
-      {selectedId && (
-        <Modal selectedId={selectedId} setSelectedId={setSelectedId} />
+      {Object.keys(selectedClient).length > 0 && (
+        <Modal
+          selectedClient={selectedClient}
+          setSelectedClient={setSelectedClient}
+          user={user}
+        />
       )}
       <span className="font-semibold text-lg">Add a new Client</span>
       {/**add client form */}
@@ -121,7 +125,7 @@ const Clients = () => {
                   index === data.length - 1 ? "rounded-b-md" : null
                 } flex sm:w-2/3 w-full py-3 bg-white text-black items-center divide-x-1 divide-black`}
                 key={client?.id}
-                onClick={() => setSelectedId(client?.id)}
+                onClick={() => setSelectedClient(client)}
               >
                 <span className="w-1/2 text-center sm:text-base text-sm px-2.5 break-words">
                   {client?.email}
