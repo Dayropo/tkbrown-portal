@@ -13,7 +13,6 @@ import Image from "next/image"
 import Logo from "../../public/white_logo_transparent_background.png"
 
 const ClientSidebar = ({ tab, setTab, data, domainIndex, setDomainIndex }) => {
-  console.log({ data })
   const { showClientSidebar, setShowClientSidebar } = useContext(SidebarContext)
   const [showSubMenu, setShowSubMenu] = useState(false)
   const [showSubMenuAccount, setShowSubMenuAccount] = useState(false)

@@ -3,12 +3,17 @@ import useSWR from "swr"
 import { fetcher } from "../../lib/fetcher"
 import { FaSpinner } from "react-icons/fa"
 
-const Modal = ({ selectedId, setSelectedId }) => {
-  const { data: client, error } = useSWR(`/api/clients/${selectedId}`, fetcher)
-  const { data: sum, error: sumError } = useSWR(
-    `/api/entries/${selectedId}/sum`,
+const Modal = ({ selectedClient, setSelectedClient }) => {
+  const { data: client, error } = useSWR(
+    `/api/clients/client?email=${selectedClient?.email}&company=${selectedClient?.company}`,
     fetcher
   )
+
+  const { data: sum, error: sumError } = useSWR(
+    `/api/entries/sum/all?email=${selectedClient?.email}&company=${selectedClient?.company}`,
+    fetcher
+  )
+
   const eCPM = (sum?.total_revenue / sum?.total_impressions) * 1000
 
   return (
@@ -17,7 +22,7 @@ const Modal = ({ selectedId, setSelectedId }) => {
       <div className="relative py-5 mx-auto border min-w-1/2 shadow-xl rounded-md bg-white text-black">
         <button
           className="absolute -top-3 -right-3 bg-white shadow-md rounded-full p-2.5 text-sm text-center text-black"
-          onClick={() => setSelectedId("")}
+          onClick={() => setSelectedClient("")}
         >
           <FiX size={20} />
         </button>
