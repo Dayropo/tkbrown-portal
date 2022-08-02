@@ -31,33 +31,39 @@ const AdminSidebar = ({ tab, setTab }) => {
       </div>
 
       <div className="mt-6">
-        <span
-          className={tab === "clients" ? currentTab : regularTab}
-          onClick={() => {
-            setTab("clients")
-            setShowAdminSidebar(false)
-          }}
-        >
-          <FiUsers className="mr-4" size={20} /> Clients
-        </span>
-        <span
-          className={tab === "entries" ? currentTab : regularTab}
-          onClick={() => {
-            setTab("entries")
-            setShowAdminSidebar(false)
-          }}
-        >
-          <BsJournals className="mr-4" size={20} /> Entries
-        </span>
-        <span
-          className={tab === "billings" ? currentTab : regularTab}
-          onClick={() => {
-            setTab("billings")
-            setShowAdminSidebar(false)
-          }}
-        >
-          <FiCreditCard className="mr-4" size={20} /> Billings
-        </span>
+        <div className="border-y border-purple-600">
+          <span
+            className={tab === "clients" ? currentTab : regularTab}
+            onClick={() => {
+              setTab("clients")
+              setShowAdminSidebar(false)
+            }}
+          >
+            <FiUsers className="mr-4" size={20} /> Clients
+          </span>
+        </div>
+        <div className="border-y border-purple-600">
+          <span
+            className={tab === "entries" ? currentTab : regularTab}
+            onClick={() => {
+              setTab("entries")
+              setShowAdminSidebar(false)
+            }}
+          >
+            <BsJournals className="mr-4" size={20} /> Entries
+          </span>
+        </div>
+        <div className="border-y border-purple-600">
+          <span
+            className={tab === "billings" ? currentTab : regularTab}
+            onClick={() => {
+              setTab("billings")
+              setShowAdminSidebar(false)
+            }}
+          >
+            <FiCreditCard className="mr-4" size={20} /> Billings
+          </span>
+        </div>
       </div>
     </div>
   )
