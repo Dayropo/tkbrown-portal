@@ -10,7 +10,6 @@ export default async function handler(req, res) {
       where: {
         client_company: company,
       },
-      take: 30,
       orderBy: {
         posted_at: "asc",
       },
