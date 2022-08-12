@@ -27,6 +27,7 @@ const Dashboard = ({ user, company }) => {
     `/api/entries/client/chart/${time}?company=${company}`,
     fetcher
   )
+
   const slicedChart = chart?.slice(-30)
 
   //get data for entries
@@ -108,10 +109,15 @@ const Dashboard = ({ user, company }) => {
             </div>
 
             {/**chart */}
-
-            <div className="mt-8 bg-white p-4 rounded-lg relative w-full h-[50vh]">
-              <LineChart entries={slicedChart} />
-            </div>
+            {chart?.length > 31 ? (
+              <div className="mt-8 bg-white p-4 rounded-lg relative w-full h-[50vh]">
+                <LineChart entries={slicedChart} />
+              </div>
+            ) : (
+              <div className="mt-8 bg-white p-4 rounded-lg relative w-full h-[50vh]">
+                <LineChart entries={chart} />
+              </div>
+            )}
 
             {/**daily input */}
 
