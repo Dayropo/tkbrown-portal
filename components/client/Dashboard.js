@@ -121,7 +121,7 @@ const Dashboard = ({ user, company }) => {
 
             {/**daily input */}
 
-            <div className="mt-8 flex flex-col">
+            {/* <div className="mt-8 flex flex-col">
               <div className="flex w-full py-3 bg-purple-400 rounded-t-md text-white items-end">
                 <span className="w-1/4 text-center sm:text-base text-sm">
                   Date
@@ -136,7 +136,7 @@ const Dashboard = ({ user, company }) => {
                   eCPM
                 </span>
               </div>
-              {/**records mapping */}
+
               {entries?.map((entry, index) => (
                 <div
                   key={index}
@@ -158,30 +158,7 @@ const Dashboard = ({ user, company }) => {
                   </span>
                 </div>
               ))}
-
-              {/* <div
-            className={`${
-              entryIndex ? "justify-between" : "justify-end"
-            } w-full flex items-center bg-white py-2.5 px-4`}
-          >
-            <button
-              className={`${
-                entryIndex ? "flex" : "hidden"
-              } bg-purple-400 text-white py-1.5 px-6 rounded-2xl`}
-              onClick={() => setEntryIndex(entryIndex - 1)}
-            >
-              Prev
-            </button>
-            <button
-              className={`${
-                entries?.length < 7 ? "hidden" : "flex"
-              } bg-purple-400 text-white py-1.5 px-6 rounded-2xl`}
-              onClick={() => setEntryIndex(entryIndex + 1)}
-            >
-              Next
-            </button>
-          </div> */}
-            </div>
+            </div> */}
           </div>
         ) : (
           <div className="flex h-[50vh] items-center justify-center">
