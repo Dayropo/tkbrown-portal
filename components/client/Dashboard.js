@@ -182,9 +182,9 @@ const Dashboard = ({ user, company }) => {
         <Skeleton height={360} />
       </div>
 
-      <div className="mt-8 flex flex-col">
+      {/* <div className="mt-8 flex flex-col">
         <Skeleton height={250} />
-      </div>
+      </div> */}
     </div>
   )
 }
