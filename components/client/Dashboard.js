@@ -1,4 +1,4 @@
-import { timestampToDate } from "../../utils/helpers"
+import { formatDate, timestampToDate, trimDate } from "../../utils/helpers"
 import useSWR from "swr"
 import axios from "axios"
 import { useState } from "react"
@@ -6,86 +6,215 @@ import LineChart from "../client/LineChart"
 import { fetcher } from "../../lib/fetcher"
 import Skeleton from "react-loading-skeleton"
 import "react-loading-skeleton/dist/skeleton.css"
-import { MdAddchart } from "react-icons/md"
+import { MdAddchart, MdContactSupport } from "react-icons/md"
+import { FiChevronDown, FiChevronUp } from "react-icons/fi"
+import DatePicker from "react-datepicker"
+import { DateRangePicker } from "react-date-range"
+import {
+  addDays,
+  endOfWeek,
+  startOfWeek,
+  format,
+  startOfMonth,
+  addMonths,
+  endOfMonth,
+  startOfDay,
+  endOfDay,
+} from "date-fns"
+
+import "react-date-range/dist/styles.css" // main css file
+import "react-date-range/dist/theme/default.css" // theme css file
+import "react-datepicker/dist/react-datepicker.css"
+import { defaultStaticRanges } from "../DateRange"
 
 const Dashboard = ({ user, company }) => {
+  const inputStyles = `text-black font-normal bg-purple-50 lg:w-1/4 sm:w-1/3 w-1/2 mr-6 px-4 sm:pt-2 pt-4 pb-1.5 border-b-2 border-gray-400 w-full placeholder:text-gray-400 hover:border-gray-400 focus:outline-none focus:ring-none focus:border-purple-600`
+
   // const [entryIndex, setEntryIndex] = useState(0)
   const [time, setTime] = useState("last-7d")
+  const [option, setOption] = useState("last-7d")
+  const [startDate, setStartDate] = useState(
+    format(startOfDay(addDays(new Date(), -6)), "yyyy-MM-dd")
+  )
+  const [endDate, setEndDate] = useState(
+    format(endOfDay(new Date()), "yyyy-MM-dd")
+  )
+  const [showPicker, setShowPicker] = useState(false)
+
+  const [dates, setDates] = useState([
+    {
+      startDate: startOfWeek(new Date()),
+      endDate: endOfWeek(new Date()),
+      key: "selection",
+    },
+  ])
+
+  console.log({
+    dates: dates,
+    startfns: format(dates[0].startDate, "yyyy-MM-dd"),
+    endfns: format(dates[0].endDate, "yyyy-MM-dd"),
+  })
+
+  console.log({ startDate, endDate })
 
   // dashboard states
 
   //get data for jumbo
+  // const { data: sum, error: sumError } = useSWR(
+  //   `/api/entries/sum/${time}?email=${user?.email}&company=${company}`,
+  //   fetcher
+  // )
   const { data: sum, error: sumError } = useSWR(
-    `/api/entries/sum/${time}?email=${user?.email}&company=${company}`,
+    `/api/entries/sum/range?email=${user?.email}&company=${company}&from=${startDate}&to=${endDate}`,
     fetcher
   )
 
   const eCPM = (sum?.total_revenue / sum?.total_impressions) * 1000
 
   //get data for chart
+  // const { data: chart, error: chartError } = useSWR(
+  //   `/api/entries/client/chart/${time}?company=${company}&from=${startDate}&to=${endDate}`,
+  //   fetcher
+  // )
   const { data: chart, error: chartError } = useSWR(
-    `/api/entries/client/chart/${time}?company=${company}`,
+    `/api/entries/client/chart/range?company=${company}&from=${startDate}&to=${endDate}`,
     fetcher
   )
 
   const slicedChart = chart?.slice(-30)
 
   //get data for entries
-  const { data: entries, error: entriesError } = useSWR(
-    `/api/entries/client/${time}?company=${company}`,
-    fetcher
-  )
+  // const { data: entries, error: entriesError } = useSWR(
+  //   `/api/entries/client/${time}?company=${company}`,
+  //   fetcher
+  // )
 
-  if (sum && chart && entries) {
+  if (sum && chart) {
     return (
       <div className="py-4">
         <span className="font-semibold text-lg">{`Welcome, ${company}`}</span>
         {/**summary */}
 
-        <div className="flex flex-wrap items-center mt-2.5 ">
+        <div className="flex flex-wrap relative items-center mt-2.5 ">
           <button
             className={`${
-              time === "last-7d"
+              option === "last-7d"
                 ? "bg-purple-500 text-white"
                 : "border border-purple-500 text-purple-500"
             } py-1.5 px-6 md:w-auto w-2/5 rounded-md text-sm font-medium mr-4`}
-            onClick={() => setTime("last-7d")}
+            onClick={() => {
+              setOption("last-7d")
+              // setTime("last-7d")
+              setStartDate(
+                format(startOfDay(addDays(new Date(), -6)), "yyyy-MM-dd")
+              )
+              setEndDate(format(endOfDay(new Date()), "yyyy-MM-dd"))
+              setShowPicker(false)
+            }}
           >
             LAST 7 DAYS
           </button>
           <button
             className={`${
-              time === "last-month"
+              option === "last-month"
                 ? "bg-purple-500 text-white"
                 : "border border-purple-500 text-purple-500"
             } py-1.5 px-6 md:w-auto w-2/5  rounded-md text-sm font-medium mr-4`}
-            onClick={() => setTime("last-month")}
+            onClick={() => {
+              setOption("last-month")
+              // setTime("last-month")
+              setStartDate(
+                format(startOfMonth(addMonths(new Date(), -1)), "yyyy-MM-dd")
+              )
+              setEndDate(
+                format(endOfMonth(addMonths(new Date(), -1)), "yyyy-MM-dd")
+              )
+              setShowPicker(false)
+            }}
           >
             LAST MONTH
           </button>
           <button
             className={`${
-              time === "this-month"
+              option === "this-month"
                 ? "bg-purple-500 text-white"
                 : "border border-purple-500 text-purple-500"
             } py-1.5 px-6 md:w-auto w-2/5 md:mt-0 mt-1.5 rounded-md text-sm font-medium mr-4`}
-            onClick={() => setTime("this-month")}
+            onClick={() => {
+              setOption("this-month")
+              // setTime("this-month")
+              setStartDate(format(startOfMonth(new Date()), "yyyy-MM-dd"))
+              setEndDate(format(endOfMonth(new Date()), "yyyy-MM-dd"))
+              setShowPicker(false)
+            }}
           >
             THIS MONTH
           </button>
           <button
             className={`${
-              time === "all"
+              option === "all"
                 ? "bg-purple-500 text-white"
                 : "border border-purple-500 text-purple-500"
-            } py-1.5 px-6 md:w-auto w-2/5 md:mt-0 mt-1.5 rounded-md text-sm font-medium`}
-            onClick={() => setTime("all")}
+            } py-1.5 px-6 md:w-auto w-2/5 md:mt-0 mt-1.5 rounded-md text-sm font-medium mr-4`}
+            onClick={() => {
+              setOption("all")
+              // setTime("all")
+              setStartDate("2022-01-01")
+              setEndDate(format(endOfWeek(new Date()), "yyyy-MM-dd"))
+              setShowPicker(false)
+            }}
           >
             ALL HISTORY
           </button>
+          <button
+            className={`${
+              option === "custom"
+                ? "bg-purple-500 text-white"
+                : "border border-purple-500 text-purple-500"
+            } py-1.5 px-6 md:w-auto w-2/5 lg:mt-0 mt-1.5 rounded-md text-sm font-medium flex items-center`}
+            onClick={() => {
+              setOption("custom")
+              setShowPicker(!showPicker)
+            }}
+          >
+            <p>CUSTOM PERIOD</p>
+            {showPicker ? (
+              <FiChevronUp size={16} className="ml-2 font-medium" />
+            ) : (
+              <FiChevronDown size={16} className="ml-2 font-medium" />
+            )}
+          </button>
+
+          {/**filter */}
+          {showPicker && (
+            <div className="absolute lg:top-12 sm:top-20 top-32 z-50 bg-white flex flex-col md:w-auto w-full">
+              <DateRangePicker
+                onChange={item => setDates([item.selection])}
+                showSelectionPreview={true}
+                moveRangeOnFirstSelection={false}
+                months={1}
+                ranges={dates}
+                direction="horizontal"
+                staticRanges={defaultStaticRanges}
+                inputRanges={[]}
+              />
+              <div className="flex justify-end p-4">
+                <button
+                  className="bg-blu text-white text-sm font-medium py-1.5 px-6 rounded-xl"
+                  onClick={() => {
+                    setStartDate(format(dates[0].startDate, "yyyy-MM-dd"))
+                    setEndDate(format(dates[0].endDate, "yyyy-MM-dd"))
+                    setShowPicker(false)
+                  }}
+                >
+                  APPLY
+                </button>
+              </div>
+            </div>
+          )}
         </div>
 
-        {chart?.length > 0 && entries?.length > 0 ? (
+        {chart?.length > 0 ? (
           <div>
             <div className="w-full mt-5 flex flex-wrap item-center text-white">
               <div className="bg-purple-500 py-4 lg:px-16 px-8 md:mr-8 mr-4 mb-2.5 rounded-xl">

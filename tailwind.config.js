@@ -13,6 +13,9 @@ module.exports = {
         oswald: "Oswald, sans-serif",
         parisienne: "Parisienne, cursive",
       },
+      colors: {
+        blu: "#4996f3",
+      },
     },
   },
   variants: {

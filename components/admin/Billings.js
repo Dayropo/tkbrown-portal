@@ -8,6 +8,8 @@ const Billings = () => {
     fetcher
   )
 
+  console.log({ billings })
+
   return (
     <div className="py-4">
       <span className="font-semibold text-lg mb-8">Billings</span>

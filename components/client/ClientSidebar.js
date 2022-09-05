@@ -74,7 +74,8 @@ const ClientSidebar = ({ tab, setTab, data, domainIndex, setDomainIndex }) => {
                     setShowClientSidebar(false)
                   }}
                 >
-                  <FaLaptop className="mx-4" size={20} /> {item.company}
+                  <FaLaptop className="absolute left-12" size={20} />
+                  <p className="ml-12 break-all">{item.company}</p>
                 </span>
               ))}
           </div>
