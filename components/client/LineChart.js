@@ -46,8 +46,8 @@ const LineChart = ({ entries }) => {
         data: entries?.map(entry => entry.impressions),
         yAxisID: "y1",
         type: "bar",
-        // backgroundColor: "rgb(156, 163, 175, 1)",
-        // borderColor: "rgb(156, 163, 175, 1)",
+        backgroundColor: "rgb(238, 220, 130, 0.3)",
+        borderColor: "rgb(238, 220, 130, 0.5)",
         borderWidth: 2,
       },
       {
