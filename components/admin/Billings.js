@@ -151,6 +151,7 @@ const Billings = () => {
               className={`${
                 index === billings.length - 1 ? "rounded-b-md" : null
               } flex w-full py-3 bg-white text-black items-center divide-x-1 divide-black`}
+              key={index}
             >
               <span className="w-1/5 text-center sm:text-base text-sm px-2.5 break-words">
                 {item?.client_company ? item?.client_company : "-"}
