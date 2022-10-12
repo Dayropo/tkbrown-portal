@@ -101,7 +101,7 @@ const Dashboard = ({ user, company }) => {
               option === "last-7d"
                 ? "bg-purple-500 text-white"
                 : "border border-purple-500 text-purple-500"
-            } py-1.5 px-6 md:w-auto w-2/5 rounded-md text-sm font-medium mr-4`}
+            } py-1.5 px-6 md:w-auto w-2/5 my-1.5 rounded-md text-sm font-medium mr-4`}
             onClick={() => {
               setOption("last-7d")
               // setTime("last-7d")
@@ -119,7 +119,7 @@ const Dashboard = ({ user, company }) => {
               option === "last-month"
                 ? "bg-purple-500 text-white"
                 : "border border-purple-500 text-purple-500"
-            } py-1.5 px-6 md:w-auto w-2/5  rounded-md text-sm font-medium mr-4`}
+            } py-1.5 px-6 md:w-auto w-2/5 my-1.5 rounded-md text-sm font-medium mr-4`}
             onClick={() => {
               setOption("last-month")
               // setTime("last-month")
@@ -139,7 +139,7 @@ const Dashboard = ({ user, company }) => {
               option === "this-month"
                 ? "bg-purple-500 text-white"
                 : "border border-purple-500 text-purple-500"
-            } py-1.5 px-6 md:w-auto w-2/5 md:mt-0 mt-2 rounded-md text-sm font-medium mr-4`}
+            } py-1.5 px-6 md:w-auto w-2/5 my-1.5 rounded-md text-sm font-medium mr-4`}
             onClick={() => {
               setOption("this-month")
               // setTime("this-month")
@@ -155,7 +155,7 @@ const Dashboard = ({ user, company }) => {
               option === "all"
                 ? "bg-purple-500 text-white"
                 : "border border-purple-500 text-purple-500"
-            } py-1.5 px-6 md:w-auto w-2/5 md:mt-0 mt-2 rounded-md text-sm font-medium mr-4`}
+            } py-1.5 px-6 md:w-auto w-2/5 my-1.5 rounded-md text-sm font-medium mr-4`}
             onClick={() => {
               setOption("all")
               // setTime("all")
@@ -171,7 +171,7 @@ const Dashboard = ({ user, company }) => {
               option === "custom"
                 ? "bg-purple-500 text-white"
                 : "border border-purple-500 text-purple-500"
-            } py-1.5 px-6 md:w-auto w-2/5 xl:mt-0 mt-2 rounded-md md:text-sm text-xs font-medium flex items-center`}
+            } py-1.5 px-6 md:w-auto w-2/5 my-1.5 rounded-md md:text-sm text-xs font-medium flex items-center`}
             onClick={() => {
               setOption("custom")
               setShowPicker(!showPicker)
