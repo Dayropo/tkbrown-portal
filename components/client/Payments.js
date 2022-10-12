@@ -16,12 +16,12 @@ const Payments = ({ user, company }) => {
   if (sum) {
     return (
       <div className="py-4 space-y-4">
-        <div className="p-12 border border-gray-200 rounded-md flex items-center">
+        <div className="p-3 sm:p-12 border border-gray-200 rounded-md flex items-center">
           <p className="text-lg font-semibold">
             Your last month&apos;s earnings: {sum?.total_revenue} €
           </p>
         </div>
-        <div className="p-12 border border-gray-200 rounded-md flex flex-col w-full">
+        <div className="p-3 sm:p-12 border border-gray-200 rounded-md flex flex-col w-full">
           <p className="text-lg font-semibold">Invoices</p>
 
           {invoices?.length > 0 && (
