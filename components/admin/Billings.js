@@ -9,6 +9,7 @@ import { TextField, Box, MenuItem } from "@mui/material"
 import axios from "axios"
 import Swal from "sweetalert2"
 import { status } from "../../utils/data"
+import EditInvoiceModal from "./EditInvoiceModal"
 
 const StyledTextField = styled(TextField)({
   "& .MuiInputBase-input": {
@@ -66,6 +67,7 @@ const billingSchema = yup.object({
 const Billings = () => {
   const [invoiceIndex, setInvoiceIndex] = useState(0)
   const [selectedInvoice, setSelectedInvoice] = useState({})
+  const [showModal, setShowModal] = useState(false)
 
   const formik = useFormik({
     initialValues: {
@@ -124,7 +126,14 @@ const Billings = () => {
   )
 
   return (
-    <div className="py-4">
+    <div className="py-4 relative">
+      {showModal && (
+        <EditInvoiceModal
+          selectedInvoice={selectedInvoice}
+          showModal={showModal}
+          setShowModal={setShowModal}
+        />
+      )}
       <span className="font-semibold text-lg mb-8">Billings</span>
       {billings?.length > 0 ? (
         <div className="mt-8 hidden sm:flex flex-col">
@@ -212,9 +221,12 @@ const Billings = () => {
             <div
               className={`${
                 index === invoices.length - 1 ? "rounded-b-md" : null
-              } flex w-full py-3 bg-white text-black items-center divide-x-1 divide-black`}
+              } flex w-full py-3 bg-white text-black items-center divide-x-1 divide-black cursor-pointer`}
               key={item?.id}
-              onClick={() => setSelectedInvoice(item)}
+              onClick={() => {
+                setShowModal(true)
+                setSelectedInvoice(item)
+              }}
             >
               <span className="w-1/3 lg:w-2/12 text-center sm:text-base text-sm px-2.5 break-words">
                 {item?.invoice_number}
@@ -236,6 +248,29 @@ const Billings = () => {
               </span>
             </div>
           ))}
+
+          <div
+            className={`${
+              invoiceIndex ? "justify-between" : "justify-end"
+            } w-full flex items-center bg-white py-2.5 px-4`}
+          >
+            <button
+              className={`${
+                invoiceIndex ? "flex" : "hidden"
+              } bg-purple-400 text-white py-1.5 px-6 rounded-2xl`}
+              onClick={() => setInvoiceIndex(invoiceIndex - 1)}
+            >
+              Prev
+            </button>
+            <button
+              className={`${
+                invoices?.length < 5 ? "hidden" : "flex"
+              } bg-purple-400 text-white py-1.5 px-6 rounded-2xl`}
+              onClick={() => setInvoiceIndex(invoiceIndex + 1)}
+            >
+              Next
+            </button>
+          </div>
         </div>
       )}
 
