@@ -78,4 +78,33 @@ export default async function handler(req, res) {
       })
     }
   }
+
+  //put
+  if (req.method === "PUT") {
+    const data = req.body
+
+    const invoice = await prisma.invoices.update({
+      where: {
+        id: data.id,
+      },
+      data: {
+        invoice_number: data.invoice_number,
+        period: data.period,
+        amount: data.amount,
+        client_email: data.client_email,
+        client_domain: data.client_domain,
+        status: data.status,
+      },
+    })
+
+    if (invoice) {
+      return res.status(201).send({
+        message: "Invoice updated successfully.",
+      })
+    }
+
+    return res.status(500).send({
+      message: "An error occurred. Please try again later.",
+    })
+  }
 }
