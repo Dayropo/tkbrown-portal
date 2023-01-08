@@ -4,7 +4,7 @@ const prisma = new PrismaClient()
 
 export default async function handler(req, res) {
   if (req.method === "GET") {
-    const { email, company } = req.query
+    const { email, company, from, to } = req.query
 
     const client = await prisma.clients.findFirst({
       where: {
@@ -14,10 +14,14 @@ export default async function handler(req, res) {
     })
 
     if (client) {
+      //   const total_revenue =
+      //     await prisma.$queryRaw`SELECT SUM(revenue) AS 'total_revenue' FROM entries WHERE client_email = ${email} AND client_company = ${company} AND posted_at > now() - INTERVAL 7 day`
+      //   const total_impressions =
+      //     await prisma.$queryRaw`SELECT SUM(impressions) AS 'total_impressions' FROM entries WHERE client_email = ${email} AND client_company = ${company} AND posted_at > now() - INTERVAL 7 day`
       const total_revenue =
-        await prisma.$queryRaw`SELECT SUM(revenue) AS 'total_revenue' FROM entries WHERE client_email = ${email} AND client_company = ${company} AND MONTH(posted_at) = (MONTH(CURRENT_DATE()) - 1) AND YEAR(posted_at) = YEAR(CURRENT_DATE())`
+        await prisma.$queryRaw`SELECT SUM(revenue) AS 'total_revenue' FROM entries WHERE client_email = ${email} AND client_company = ${company} AND posted_at BETWEEN ${from} AND ${to}`
       const total_impressions =
-        await prisma.$queryRaw`SELECT SUM(impressions) AS 'total_impressions' FROM entries WHERE client_email = ${email} AND client_company = ${company} AND MONTH(posted_at) = (MONTH(CURRENT_DATE()) - 1) AND YEAR(posted_at) = YEAR(CURRENT_DATE())`
+        await prisma.$queryRaw`SELECT SUM(impressions) AS 'total_impressions' FROM entries WHERE client_email = ${email} AND client_company = ${company} AND posted_at BETWEEN ${from} AND ${to}`
 
       return res.status(200).send({
         total_revenue: total_revenue[0].total_revenue,
