@@ -1,10 +1,19 @@
 import Skeleton from "react-loading-skeleton"
 import useSWR from "swr"
 import { fetcher } from "../../lib/fetcher"
+import { format, startOfMonth, addMonths, endOfMonth } from "date-fns"
+import { useState } from "react"
 
 const Payments = ({ user, company }) => {
+  const startDate = useState(
+    format(startOfMonth(addMonths(new Date(), -1)), "yyyy-MM-dd")
+  )
+  const endDate = useState(
+    format(endOfMonth(addMonths(new Date(), -1)), "yyyy-MM-dd")
+  )
+
   const { data: sum, error: sumError } = useSWR(
-    `/api/entries/sum/last-month?email=${user?.email}&company=${company}`,
+    `/api/entries/sum/last-month?email=${user?.email}&company=${company}&from=${startDate}&to=${endDate}`,
     fetcher
   )
 
