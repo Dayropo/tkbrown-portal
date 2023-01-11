@@ -4,7 +4,7 @@ export const status = [
     value: "Processing",
   },
   {
-    label: "Completed",
-    value: "Completed",
+    label: "Paid",
+    value: "Paid",
   },
 ]
