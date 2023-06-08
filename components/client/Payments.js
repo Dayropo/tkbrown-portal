@@ -11,6 +11,7 @@ const Payments = ({ user, company }) => {
   const endDate = useState(
     format(endOfMonth(addMonths(new Date(), -1)), "yyyy-MM-dd")
   )
+  const [invoiceIndex, setInvoiceIndex] = useState(0)
 
   const { data: sum, error: sumError } = useSWR(
     `/api/entries/sum/last-month?email=${user?.email}&company=${company}&from=${startDate}&to=${endDate}`,
@@ -18,7 +19,7 @@ const Payments = ({ user, company }) => {
   )
 
   const { data: invoices, error: invoiceError } = useSWR(
-    `/api/invoice?client_email=${user?.email}&client_domain=${company}`,
+    `/api/invoice?client_email=${user?.email}&client_domain=${company}&index=${invoiceIndex}`,
     fetcher
   )
 
@@ -74,6 +75,29 @@ const Payments = ({ user, company }) => {
                   </span>
                 </div>
               ))}
+
+              <div
+                className={`${
+                  invoiceIndex ? "justify-between" : "justify-end"
+                } w-full flex items-center bg-white py-2.5 px-4`}
+              >
+                <button
+                  className={`${
+                    invoiceIndex ? "flex" : "hidden"
+                  } bg-purple-400 text-white py-1.5 px-6 rounded-2xl`}
+                  onClick={() => setInvoiceIndex(invoiceIndex - 1)}
+                >
+                  Prev
+                </button>
+                <button
+                  className={`${
+                    invoices?.length < 5 ? "hidden" : "flex"
+                  } bg-purple-400 text-white py-1.5 px-6 rounded-2xl`}
+                  onClick={() => setInvoiceIndex(invoiceIndex + 1)}
+                >
+                  Next
+                </button>
+              </div>
             </div>
           )}
         </div>
