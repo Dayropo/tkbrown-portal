@@ -52,6 +52,8 @@ export default async function handler(req, res) {
           client_email,
           client_domain,
         },
+        take: 5,
+        skip: index * 5,
       })
 
       if (invoice) {
