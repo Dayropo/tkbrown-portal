@@ -49,14 +49,6 @@ const Dashboard = ({ user, company }) => {
     },
   ])
 
-  console.log({
-    dates: dates,
-    startfns: format(dates[0].startDate, "yyyy-MM-dd"),
-    endfns: format(dates[0].endDate, "yyyy-MM-dd"),
-  })
-
-  console.log({ startDate, endDate })
-
   // dashboard states
 
   //get data for jumbo
@@ -65,7 +57,7 @@ const Dashboard = ({ user, company }) => {
   //   fetcher
   // )
   const { data: sum, error: sumError } = useSWR(
-    `/api/entries/sum/range?email=${user?.email}&company=${company}&from=${startDate}&to=${endDate}`,
+    `/api/v2/entries/sum/range?email=${user?.email}&company=${company}&from=${startDate}&to=${endDate}`,
     fetcher
   )
 
@@ -77,7 +69,7 @@ const Dashboard = ({ user, company }) => {
   //   fetcher
   // )
   const { data: chart, error: chartError } = useSWR(
-    `/api/entries/client/chart/range?company=${company}&from=${startDate}&to=${endDate}`,
+    `/api/v2/entries/client/chart/range?company=${company}&from=${startDate}&to=${endDate}`,
     fetcher
   )
 

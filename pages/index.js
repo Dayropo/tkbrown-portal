@@ -31,7 +31,7 @@ export default function Home() {
     event.preventDefault()
     setLoginError("")
     const res = await axios
-      .post("/api/login", {
+      .post("/api/v2/login", {
         email: user.email,
         password: user.password,
       })
