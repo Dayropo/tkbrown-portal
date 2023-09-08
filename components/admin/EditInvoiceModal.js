@@ -80,11 +80,9 @@ const billingSchema = yup.object({
 })
 
 const EditInvoiceModal = ({ selectedInvoice, showModal, setShowModal }) => {
-  console.log({ selectedInvoice })
-
   const formik = useFormik({
     initialValues: {
-      id: selectedInvoice.id,
+      _id: selectedInvoice._id,
       invoice_number: selectedInvoice.invoice_number,
       period: selectedInvoice.period,
       amount: selectedInvoice.amount,
@@ -97,8 +95,8 @@ const EditInvoiceModal = ({ selectedInvoice, showModal, setShowModal }) => {
     validateOnChange: false,
     onSubmit: async (values, { resetForm }) => {
       const response = await axios
-        .put("/api/invoice/", {
-          id: values.id,
+        .put("/api/v2/invoice/", {
+          _id: values._id,
           invoice_number: values.invoice_number,
           period: values.period,
           amount: values.amount,

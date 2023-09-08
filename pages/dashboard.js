@@ -47,7 +47,10 @@ const ClientDetails = ({ user }) => {
 
   const { showClientSidebar, setShowClientSidebar } = useContext(SidebarContext)
 
-  const { data, error } = useSWR(`/api/clients?email=${user?.email}`, fetcher)
+  const { data, error } = useSWR(
+    `/api/v2/clients?email=${user?.email}`,
+    fetcher
+  )
 
   if (data) {
     return (

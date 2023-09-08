@@ -12,7 +12,10 @@ const Clients = ({ user }) => {
   const [clientIndex, setClientIndex] = useState(0)
   const [selectedClient, setSelectedClient] = useState({})
 
-  const { data, error } = useSWR(`/api/clients?index=${clientIndex}`, fetcher)
+  const { data, error } = useSWR(
+    `/api/v2/clients?index=${clientIndex}`,
+    fetcher
+  )
 
   if (error) {
     console.error(error.response.message)
@@ -27,7 +30,7 @@ const Clients = ({ user }) => {
   const addClient = async e => {
     e.preventDefault()
     const res = await axios
-      .post("/api/clients/", {
+      .post("/api/v2/clients/", {
         email: client.email,
         company: client.company,
       })

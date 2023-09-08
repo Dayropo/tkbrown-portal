@@ -4,7 +4,6 @@ export const timestampToDate = createdAt => {
 }
 
 export const formatDate = date => {
-  console.log({ date })
   return `${date?.getFullYear()}-${date?.getMonth() + 1}-${date?.getDate()}`
 }
 

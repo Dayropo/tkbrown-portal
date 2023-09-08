@@ -14,12 +14,12 @@ const Payments = ({ user, company }) => {
   const [invoiceIndex, setInvoiceIndex] = useState(0)
 
   const { data: sum, error: sumError } = useSWR(
-    `/api/entries/sum/last-month?email=${user?.email}&company=${company}&from=${startDate}&to=${endDate}`,
+    `/api/v2/entries/sum/last-month?email=${user?.email}&company=${company}&from=${startDate}&to=${endDate}`,
     fetcher
   )
 
   const { data: invoices, error: invoiceError } = useSWR(
-    `/api/invoice?client_email=${user?.email}&client_domain=${company}&index=${invoiceIndex}`,
+    `/api/v2/invoice?client_email=${user?.email}&client_domain=${company}&index=${invoiceIndex}`,
     fetcher
   )
 
@@ -28,7 +28,8 @@ const Payments = ({ user, company }) => {
       <div className="py-4 space-y-4">
         <div className="p-3 sm:p-12 border border-gray-200 rounded-md flex items-center">
           <p className="text-lg font-semibold">
-            Your last month&apos;s earnings: {sum?.total_revenue} €
+            Your last month&apos;s earnings:{" "}
+            {parseInt(sum?.total_revenue.$numberDecimal)} €
           </p>
         </div>
         <div className="p-3 sm:p-12 border border-gray-200 rounded-md flex flex-col w-full">
