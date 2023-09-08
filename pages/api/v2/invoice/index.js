@@ -1,8 +1,7 @@
 import Invoice from "models/Invoice"
-import { ObjectId } from "mongodb"
 import dbConnect from "utils/dbConnect"
 
-export default async function handler() {
+export default async function handler(req, res) {
   try {
     await dbConnect()
 
@@ -73,28 +72,37 @@ export default async function handler() {
 
     if (req.method === "PUT") {
       const data = req.body
-      console.log(data.id)
 
-      const invoice = await Invoice.updateOne(
-        { _id: ObjectId(data.id) },
-        {
-          invoice_number: data.invoice_number,
-          period: data.period,
-          amount: data.amount,
-          client_email: data.client_email,
-          client_domain: data.client_domain,
-          status: data.status,
+      const checkInvoice = await Invoice.findOne({
+        _id: data._id,
+      })
+
+      if (checkInvoice) {
+        const invoice = await Invoice.updateOne(
+          { _id: checkInvoice._id },
+          {
+            invoice_number: data.invoice_number,
+            period: data.period,
+            amount: data.amount,
+            client_email: data.client_email,
+            client_domain: data.client_domain,
+            status: data.status,
+          }
+        )
+
+        if (invoice) {
+          return res.status(201).send({
+            message: "Invoice updated successfully.",
+          })
         }
-      )
 
-      if (invoice) {
-        return res.status(201).send({
-          message: "Invoice updated successfully.",
+        return res.status(500).send({
+          message: "An error occurred. Please try again later.",
         })
       }
 
-      return res.status(500).send({
-        message: "An error occurred. Please try again later.",
+      return res.status(400).send({
+        message: "Bad request!",
       })
     }
   } catch (error) {

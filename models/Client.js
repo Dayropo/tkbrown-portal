@@ -5,7 +5,6 @@ const clientSchema = new Schema(
     email: {
       type: String,
       trim: true,
-      unique: true,
       required: true,
     },
     password: {

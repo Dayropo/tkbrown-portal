@@ -1,6 +1,5 @@
 import { v4 as uuidv4 } from "uuid"
 import bcrypt from "bcrypt"
-import cuid from "cuid"
 import dbConnect from "utils/dbConnect"
 import Client from "models/Client"
 
@@ -10,7 +9,8 @@ export default async function handler(req, res) {
 
     if (req.method === "POST") {
       const data = req.body
-      const id = cuid()
+
+      console.log("data", data)
       const password = uuidv4()
 
       const salt = await bcrypt.genSalt()
@@ -18,12 +18,14 @@ export default async function handler(req, res) {
 
       const checkClient = await Client.findOne({ email: data.email })
 
+      console.log("checkClient", checkClient)
       if (checkClient) {
         const checkDomain = await Client.findOne({
           email: data.email,
           company: data.company,
         })
 
+        console.log(checkDomain)
         if (checkDomain) {
           return res.status(400).send({
             message:
@@ -36,6 +38,8 @@ export default async function handler(req, res) {
           company: data.company,
           password: checkClient.password,
         })
+
+        console.log(client)
 
         return res.status(201).send({
           email: client.email,

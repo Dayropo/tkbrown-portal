@@ -83,7 +83,7 @@ const Billings = () => {
     validateOnChange: false,
     onSubmit: async (values, { resetForm }) => {
       const response = await axios
-        .post("/api/invoice/", {
+        .post("/api/v2/invoice/", {
           invoice_number: values.invoice_number,
           period: values.period,
           amount: `${values.amount} €`,
@@ -116,12 +116,12 @@ const Billings = () => {
   })
 
   const { data: billings, error: billingsError } = useSWR(
-    `/api/clients/billings`,
+    `/api/v2/clients/billings`,
     fetcher
   )
 
   const { data: invoices, error: invoiceError } = useSWR(
-    `/api/invoice?index=${invoiceIndex}`,
+    `/api/v2/invoice?index=${invoiceIndex}`,
     fetcher
   )
 

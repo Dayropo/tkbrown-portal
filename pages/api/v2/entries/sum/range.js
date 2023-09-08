@@ -7,13 +7,19 @@ export default async function handler(req, res) {
     await dbConnect()
 
     if (req.method === "GET") {
-      const { email, company } = req.query
+      const { email, company, from, to } = req.query
 
       const client = await Client.findOne({ email, company })
 
       if (client) {
         const entries = await Entry.aggregate([
-          { $match: { client_email: email, client_company: company } },
+          {
+            $match: {
+              client_email: email,
+              client_company: company,
+              posted_at: { $gte: from, $lte: to },
+            },
+          },
           {
             $group: {
               _id: "$client_company",

@@ -34,7 +34,7 @@ const LineChart = ({ entries }) => {
     datasets: [
       {
         label: "Revenue",
-        data: entries?.map(entry => entry.revenue),
+        data: entries?.map(entry => parseInt(entry.revenue.$numberDecimal)),
         yAxisID: "y",
         type: "line",
         backgroundColor: "rgb(96, 165, 250, 0.25)",
@@ -52,7 +52,7 @@ const LineChart = ({ entries }) => {
       },
       {
         label: "eCPM",
-        data: entries?.map(entry => entry.eCPM),
+        data: entries?.map(entry => parseInt(entry.eCPM.$numberDecimal)),
         yAxisID: "y2",
         type: "line",
         backgroundColor: "rgb(248, 113, 113, 0.25)",

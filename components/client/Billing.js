@@ -207,7 +207,7 @@ const Billing = ({ user, company }) => {
     const validation = validateBillingTransfer()
     if (validation) {
       const res = await axios
-        .put(`/api/billings/transfer`, {
+        .put(`/api/v2/billings/transfer`, {
           client_company: company,
           billing_email: billingEmail,
           bank_name: bankDetails.bank_name,
@@ -251,7 +251,7 @@ const Billing = ({ user, company }) => {
     const validation = validateBillingPaypal()
     if (validation) {
       const res = await axios
-        .put(`/api/billings/paypal`, {
+        .put(`/api/v2/billings/paypal`, {
           client_company: company,
           billing_email: billingEmail,
           paypal_email: paypalEmail,

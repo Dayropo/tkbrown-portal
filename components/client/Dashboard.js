@@ -61,7 +61,9 @@ const Dashboard = ({ user, company }) => {
     fetcher
   )
 
-  const eCPM = (sum?.total_revenue / sum?.total_impressions) * 1000
+  const eCPM =
+    (parseInt(sum?.total_revenue.$numberDecimal) / sum?.total_impressions) *
+    1000
 
   //get data for chart
   // const { data: chart, error: chartError } = useSWR(
@@ -212,7 +214,9 @@ const Dashboard = ({ user, company }) => {
               <div className="bg-purple-500 py-4 lg:px-16 px-8 md:mr-8 mr-4 mb-2.5 rounded-xl">
                 <p className="text-xs">Revenue</p>
                 <p className="sm:text-2xl text-xl font-medium">{`${
-                  sum?.total_revenue ? `${sum?.total_revenue} €` : ""
+                  sum?.total_revenue
+                    ? `${parseInt(sum?.total_revenue.$numberDecimal)} €`
+                    : ""
                 }`}</p>
               </div>
               <div className="bg-purple-500 py-4 lg:px-16 px-8 md:mr-8 mr-4 mb-2.5 rounded-xl">

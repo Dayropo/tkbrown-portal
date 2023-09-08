@@ -78,7 +78,7 @@ const Settings = ({ user }) => {
     if (validation) {
       const res = await axios
         // .put(`/api/clients/${clientId}`, {
-        .put(`/api/clients?email=${user?.email}`, {
+        .put(`/api/v2/clients?email=${user?.email}`, {
           password: password.new,
         })
         .catch(error =>

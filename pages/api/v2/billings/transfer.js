@@ -9,16 +9,16 @@ export default async function handler(req, res) {
     if (req.method === "PUT") {
       const data = req.body
 
-      const client = Client.findOne({ company: data.company })
+      const client = await Client.findOne({ company: data.client_company })
 
       if (client) {
         const clientCompany = await Billing.findOne({
-          client_company: data.company,
+          client_company: client.company,
         })
 
         if (clientCompany) {
           const billing = await Billing.updateOne(
-            { client_company: data.company },
+            { client_company: client.company },
             {
               account_number: data.account_number,
               billing_email: data.billing_email,
