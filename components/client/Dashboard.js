@@ -49,14 +49,6 @@ const Dashboard = ({ user, company }) => {
     },
   ])
 
-  console.log({
-    dates: dates,
-    startfns: format(dates[0].startDate, "yyyy-MM-dd"),
-    endfns: format(dates[0].endDate, "yyyy-MM-dd"),
-  })
-
-  console.log({ startDate, endDate })
-
   // dashboard states
 
   //get data for jumbo
@@ -65,11 +57,13 @@ const Dashboard = ({ user, company }) => {
   //   fetcher
   // )
   const { data: sum, error: sumError } = useSWR(
-    `/api/entries/sum/range?email=${user?.email}&company=${company}&from=${startDate}&to=${endDate}`,
+    `/api/v2/entries/sum/range?email=${user?.email}&company=${company}&from=${startDate}&to=${endDate}`,
     fetcher
   )
 
-  const eCPM = (sum?.total_revenue / sum?.total_impressions) * 1000
+  const eCPM =
+    (parseInt(sum?.total_revenue.$numberDecimal) / sum?.total_impressions) *
+    1000
 
   //get data for chart
   // const { data: chart, error: chartError } = useSWR(
@@ -77,7 +71,7 @@ const Dashboard = ({ user, company }) => {
   //   fetcher
   // )
   const { data: chart, error: chartError } = useSWR(
-    `/api/entries/client/chart/range?company=${company}&from=${startDate}&to=${endDate}`,
+    `/api/v2/entries/client/chart/range?company=${company}&from=${startDate}&to=${endDate}`,
     fetcher
   )
 
@@ -220,7 +214,9 @@ const Dashboard = ({ user, company }) => {
               <div className="bg-purple-500 py-4 lg:px-16 px-8 md:mr-8 mr-4 mb-2.5 rounded-xl">
                 <p className="text-xs">Revenue</p>
                 <p className="sm:text-2xl text-xl font-medium">{`${
-                  sum?.total_revenue ? `${sum?.total_revenue} €` : ""
+                  sum?.total_revenue
+                    ? `${parseInt(sum?.total_revenue.$numberDecimal)} €`
+                    : ""
                 }`}</p>
               </div>
               <div className="bg-purple-500 py-4 lg:px-16 px-8 md:mr-8 mr-4 mb-2.5 rounded-xl">

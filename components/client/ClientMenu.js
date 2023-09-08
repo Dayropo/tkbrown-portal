@@ -6,7 +6,7 @@ const ClientMenu = ({ setTab, setIsOpen }) => {
   const router = useRouter()
 
   const handleLogout = async () => {
-    const res = await axios.post("/api/signout/").catch(error => {
+    const res = await axios.post("/api/v2/signout/").catch(error => {
       console.error(error?.response)
     })
     if (res?.data) {

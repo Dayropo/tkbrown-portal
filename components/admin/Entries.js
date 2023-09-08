@@ -130,7 +130,7 @@ const Entries = () => {
 
     if (validation) {
       const res = await axios
-        .post("/api/entries/", {
+        .post("/api/v2/entries/", {
           posted_at: entry.date,
           client_company: entry.client_company,
           revenue: Number.parseFloat(entry.revenue),
@@ -168,7 +168,7 @@ const Entries = () => {
   const [entryIndex, setEntryIndex] = useState(0)
 
   const { data: entries, error } = useSWR(
-    `/api/entries?index=${entryIndex}`,
+    `/api/v2/entries?index=${entryIndex}`,
     fetcher
   )
 
@@ -320,13 +320,13 @@ const Entries = () => {
                   {el?.client_company}
                 </span>
                 <span className="w-1/5 text-center sm:text-base text-sm px-2.5">
-                  {el?.revenue}
+                  {parseInt(el?.revenue.$numberDecimal)}
                 </span>
                 <span className="w-1/5 text-center sm:text-base text-sm px-2.5">
                   {el?.impressions}
                 </span>
                 <span className="w-1/5 text-center sm:text-base text-sm px-2.5">
-                  {el?.eCPM}
+                  {parseInt(el?.eCPM.$numberDecimal).toFixed(2)}
                 </span>
               </div>
             ))}
