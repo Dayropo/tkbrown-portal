@@ -3,7 +3,7 @@ import useSWR from "swr"
 import axios from "axios"
 import { useState } from "react"
 import LineChart from "../client/LineChart"
-import { fetcher } from "../../lib/fetcher"
+import { fetcher, options } from "../../lib/fetcher"
 import Skeleton from "react-loading-skeleton"
 import "react-loading-skeleton/dist/skeleton.css"
 import { MdAddchart, MdContactSupport } from "react-icons/md"
@@ -56,9 +56,15 @@ const Dashboard = ({ user, company }) => {
   //   `/api/entries/sum/${time}?email=${user?.email}&company=${company}`,
   //   fetcher
   // )
-  const { data: sum, error: sumError } = useSWR(
+  const {
+    data: sum,
+    error: sumError,
+    isLoading: isSumLoading,
+    isValidating: isSumValidating,
+  } = useSWR(
     `/api/v2/entries/sum/range?email=${user?.email}&company=${company}&from=${startDate}&to=${endDate}`,
-    fetcher
+    fetcher,
+    options
   )
 
   const eCPM =
@@ -70,9 +76,15 @@ const Dashboard = ({ user, company }) => {
   //   `/api/entries/client/chart/${time}?company=${company}&from=${startDate}&to=${endDate}`,
   //   fetcher
   // )
-  const { data: chart, error: chartError } = useSWR(
+  const {
+    data: chart,
+    error: chartError,
+    isLoading: isChartLoading,
+    isValidating: isChartValidating,
+  } = useSWR(
     `/api/v2/entries/client/chart/range?company=${company}&from=${startDate}&to=${endDate}`,
-    fetcher
+    fetcher,
+    options
   )
 
   const slicedChart = chart?.slice(-30)
@@ -83,133 +95,154 @@ const Dashboard = ({ user, company }) => {
   //   fetcher
   // )
 
-  if (sum && chart) {
-    return (
-      <div className="py-4">
-        <span className="font-semibold text-lg">{`Welcome, ${company}`}</span>
-        {/**summary */}
+  return (
+    <div className="py-4">
+      <span className="font-semibold text-lg">{`Welcome, ${company}`}</span>
+      {/**summary */}
 
-        <div className="flex flex-wrap relative items-center mt-2.5 ">
-          <button
-            className={`${
-              option === "last-7d"
-                ? "bg-purple-500 text-white"
-                : "border border-purple-500 text-purple-500"
-            } py-1.5 px-6 md:w-auto w-2/5 my-1.5 rounded-md text-sm font-medium mr-4`}
-            onClick={() => {
-              setOption("last-7d")
-              // setTime("last-7d")
-              setStartDate(
-                format(startOfDay(addDays(new Date(), -6)), "yyyy-MM-dd")
-              )
-              setEndDate(format(endOfDay(new Date()), "yyyy-MM-dd"))
-              setShowPicker(false)
-            }}
-          >
-            LAST 7 DAYS
-          </button>
-          <button
-            className={`${
-              option === "last-month"
-                ? "bg-purple-500 text-white"
-                : "border border-purple-500 text-purple-500"
-            } py-1.5 px-6 md:w-auto w-2/5 my-1.5 rounded-md text-sm font-medium mr-4`}
-            onClick={() => {
-              setOption("last-month")
-              // setTime("last-month")
-              setStartDate(
-                format(startOfMonth(addMonths(new Date(), -1)), "yyyy-MM-dd")
-              )
-              setEndDate(
-                format(endOfMonth(addMonths(new Date(), -1)), "yyyy-MM-dd")
-              )
-              setShowPicker(false)
-            }}
-          >
-            LAST MONTH
-          </button>
-          <button
-            className={`${
-              option === "this-month"
-                ? "bg-purple-500 text-white"
-                : "border border-purple-500 text-purple-500"
-            } py-1.5 px-6 md:w-auto w-2/5 my-1.5 rounded-md text-sm font-medium mr-4`}
-            onClick={() => {
-              setOption("this-month")
-              // setTime("this-month")
-              setStartDate(format(startOfMonth(new Date()), "yyyy-MM-dd"))
-              setEndDate(format(endOfMonth(new Date()), "yyyy-MM-dd"))
-              setShowPicker(false)
-            }}
-          >
-            THIS MONTH
-          </button>
-          <button
-            className={`${
-              option === "all"
-                ? "bg-purple-500 text-white"
-                : "border border-purple-500 text-purple-500"
-            } py-1.5 px-6 md:w-auto w-2/5 my-1.5 rounded-md text-sm font-medium mr-4`}
-            onClick={() => {
-              setOption("all")
-              // setTime("all")
-              setStartDate("2022-01-01")
-              setEndDate(format(endOfWeek(new Date()), "yyyy-MM-dd"))
-              setShowPicker(false)
-            }}
-          >
-            ALL HISTORY
-          </button>
-          <button
-            className={`${
-              option === "custom"
-                ? "bg-purple-500 text-white"
-                : "border border-purple-500 text-purple-500"
-            } py-1.5 px-6 md:w-auto w-2/5 my-1.5 rounded-md md:text-sm text-xs font-medium flex items-center`}
-            onClick={() => {
-              setOption("custom")
-              setShowPicker(!showPicker)
-            }}
-          >
-            <p>CUSTOM PERIOD</p>
-            {showPicker ? (
-              <FiChevronUp size={16} className="ml-2 font-medium" />
-            ) : (
-              <FiChevronDown size={16} className="ml-2 font-medium" />
-            )}
-          </button>
-
-          {/**filter */}
-          {showPicker && (
-            <div className="absolute lg:top-12 sm:top-20 top-32 z-50 bg-white flex flex-col md:w-auto w-full">
-              <DateRangePicker
-                onChange={item => setDates([item.selection])}
-                showSelectionPreview={true}
-                moveRangeOnFirstSelection={false}
-                months={1}
-                ranges={dates}
-                direction="horizontal"
-                staticRanges={defaultStaticRanges}
-                inputRanges={[]}
-              />
-              <div className="flex justify-end p-4">
-                <button
-                  className="bg-blu text-white text-sm font-medium py-1.5 px-6 rounded-xl"
-                  onClick={() => {
-                    setStartDate(format(dates[0].startDate, "yyyy-MM-dd"))
-                    setEndDate(format(dates[0].endDate, "yyyy-MM-dd"))
-                    setShowPicker(false)
-                  }}
-                >
-                  APPLY
-                </button>
-              </div>
-            </div>
+      <div className="flex flex-wrap relative items-center mt-2.5 ">
+        <button
+          className={`${
+            option === "last-7d"
+              ? "bg-purple-500 text-white"
+              : "border border-purple-500 text-purple-500"
+          } py-1.5 px-6 md:w-auto w-2/5 my-1.5 rounded-md text-sm font-medium mr-4`}
+          onClick={() => {
+            setOption("last-7d")
+            // setTime("last-7d")
+            setStartDate(
+              format(startOfDay(addDays(new Date(), -6)), "yyyy-MM-dd")
+            )
+            setEndDate(format(endOfDay(new Date()), "yyyy-MM-dd"))
+            setShowPicker(false)
+          }}
+        >
+          LAST 7 DAYS
+        </button>
+        <button
+          className={`${
+            option === "last-month"
+              ? "bg-purple-500 text-white"
+              : "border border-purple-500 text-purple-500"
+          } py-1.5 px-6 md:w-auto w-2/5 my-1.5 rounded-md text-sm font-medium mr-4`}
+          onClick={() => {
+            setOption("last-month")
+            // setTime("last-month")
+            setStartDate(
+              format(startOfMonth(addMonths(new Date(), -1)), "yyyy-MM-dd")
+            )
+            setEndDate(
+              format(endOfMonth(addMonths(new Date(), -1)), "yyyy-MM-dd")
+            )
+            setShowPicker(false)
+          }}
+        >
+          LAST MONTH
+        </button>
+        <button
+          className={`${
+            option === "this-month"
+              ? "bg-purple-500 text-white"
+              : "border border-purple-500 text-purple-500"
+          } py-1.5 px-6 md:w-auto w-2/5 my-1.5 rounded-md text-sm font-medium mr-4`}
+          onClick={() => {
+            setOption("this-month")
+            // setTime("this-month")
+            setStartDate(format(startOfMonth(new Date()), "yyyy-MM-dd"))
+            setEndDate(format(endOfMonth(new Date()), "yyyy-MM-dd"))
+            setShowPicker(false)
+          }}
+        >
+          THIS MONTH
+        </button>
+        <button
+          className={`${
+            option === "all"
+              ? "bg-purple-500 text-white"
+              : "border border-purple-500 text-purple-500"
+          } py-1.5 px-6 md:w-auto w-2/5 my-1.5 rounded-md text-sm font-medium mr-4`}
+          onClick={() => {
+            setOption("all")
+            // setTime("all")
+            setStartDate("2022-01-01")
+            setEndDate(format(endOfWeek(new Date()), "yyyy-MM-dd"))
+            setShowPicker(false)
+          }}
+        >
+          ALL HISTORY
+        </button>
+        <button
+          className={`${
+            option === "custom"
+              ? "bg-purple-500 text-white"
+              : "border border-purple-500 text-purple-500"
+          } py-1.5 px-6 md:w-auto w-2/5 my-1.5 rounded-md md:text-sm text-xs font-medium flex items-center`}
+          onClick={() => {
+            setOption("custom")
+            setShowPicker(!showPicker)
+          }}
+        >
+          <p>CUSTOM PERIOD</p>
+          {showPicker ? (
+            <FiChevronUp size={16} className="ml-2 font-medium" />
+          ) : (
+            <FiChevronDown size={16} className="ml-2 font-medium" />
           )}
-        </div>
+        </button>
 
-        {chart?.length > 0 ? (
-          <div>
+        {/**filter */}
+        {showPicker && (
+          <div className="absolute lg:top-12 sm:top-20 top-32 z-50 bg-white flex flex-col md:w-auto w-full">
+            <DateRangePicker
+              onChange={item => setDates([item.selection])}
+              showSelectionPreview={true}
+              moveRangeOnFirstSelection={false}
+              months={1}
+              ranges={dates}
+              direction="horizontal"
+              staticRanges={defaultStaticRanges}
+              inputRanges={[]}
+            />
+            <div className="flex justify-end p-4">
+              <button
+                className="bg-blu text-white text-sm font-medium py-1.5 px-6 rounded-xl"
+                onClick={() => {
+                  setStartDate(format(dates[0].startDate, "yyyy-MM-dd"))
+                  setEndDate(format(dates[0].endDate, "yyyy-MM-dd"))
+                  setShowPicker(false)
+                }}
+              >
+                APPLY
+              </button>
+            </div>
+          </div>
+        )}
+      </div>
+
+      {isSumLoading || isChartLoading ? (
+        <div className="py-4">
+          <div className="w-full mt-5 py-6">
+            <Skeleton height={100} />
+          </div>
+
+          <div className="mt-8">
+            <Skeleton height={360} />
+          </div>
+
+          {/* <div className="mt-8 flex flex-col">
+                <Skeleton height={250} />
+              </div> */}
+        </div>
+      ) : chart?.length > 0 ? (
+        <div>
+          {/* sum */}
+          {isSumValidating || isChartValidating ? (
+            <div className="w-full py-6 flex flex-wrap gap-4 md:gap-8 items-center">
+              <Skeleton height={80} width={200} />
+              <Skeleton height={80} width={200} />
+              <Skeleton height={80} width={200} />
+            </div>
+          ) : (
             <div className="w-full mt-5 flex flex-wrap item-center text-white">
               <div className="bg-purple-500 py-4 lg:px-16 px-8 md:mr-8 mr-4 mb-2.5 rounded-xl">
                 <p className="text-xs">Revenue</p>
@@ -232,21 +265,22 @@ const Dashboard = ({ user, company }) => {
                 }`}</p>
               </div>
             </div>
+          )}
 
-            {/**chart */}
-            {chart?.length > 31 ? (
-              <div className="mt-8 bg-white p-4 rounded-lg relative w-full h-[50vh]">
-                <LineChart entries={slicedChart} />
-              </div>
-            ) : (
-              <div className="mt-8 bg-white p-4 rounded-lg relative w-full h-[50vh]">
-                <LineChart entries={chart} />
-              </div>
-            )}
+          {/**chart */}
+          {isSumValidating || isChartValidating ? (
+            <div className="mt-8">
+              <Skeleton height={300} />
+            </div>
+          ) : (
+            <div className="mt-8 bg-white p-4 rounded-lg relative w-full h-[50vh]">
+              <LineChart entries={chart?.length > 31 ? slicedChart : chart} />
+            </div>
+          )}
 
-            {/**daily input */}
+          {/**daily input */}
 
-            {/* <div className="mt-8 flex flex-col">
+          {/* <div className="mt-8 flex flex-col">
               <div className="flex w-full py-3 bg-purple-400 rounded-t-md text-white items-end">
                 <span className="w-1/4 text-center sm:text-base text-sm">
                   Date
@@ -284,34 +318,33 @@ const Dashboard = ({ user, company }) => {
                 </div>
               ))}
             </div> */}
+        </div>
+      ) : (
+        <div className="flex h-[50vh] items-center justify-center">
+          <div className="text-center">
+            <MdAddchart size={200} className="text-purple-500" />
+            <p className="font-medium text-gray-400">No data collected</p>
           </div>
-        ) : (
-          <div className="flex h-[50vh] items-center justify-center">
-            <div className="text-center">
-              <MdAddchart size={200} className="text-purple-500" />
-              <p className="font-medium text-gray-400">No data collected</p>
-            </div>
-          </div>
-        )}
-      </div>
-    )
-  }
-
-  return (
-    <div className="py-4">
-      <div className="w-full mt-5 py-6">
-        <Skeleton height={100} />
-      </div>
-
-      <div className="mt-8">
-        <Skeleton height={360} />
-      </div>
-
-      {/* <div className="mt-8 flex flex-col">
-        <Skeleton height={250} />
-      </div> */}
+        </div>
+      )}
     </div>
   )
+
+  // return (
+  //   <div className="py-4">
+  //     <div className="w-full mt-5 py-6">
+  //       <Skeleton height={100} />
+  //     </div>
+
+  //     <div className="mt-8">
+  //       <Skeleton height={360} />
+  //     </div>
+
+  //     {/* <div className="mt-8 flex flex-col">
+  //       <Skeleton height={250} />
+  //     </div> */}
+  //   </div>
+  // )
 }
 
 export default Dashboard
